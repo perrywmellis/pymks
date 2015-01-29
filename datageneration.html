@@ -64,7 +64,7 @@
                 <li><a href="rst/INSTALLATION.html">Installation</a></li>
                 <li><a href="EXAMPLES.html">Examples</a></li>
                 <li><a href="API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -302,6 +302,38 @@ given the size of the domain, and relative grain size.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">microstructures for the system of shape (Nsamples, Nx, Ny, ...)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymks.datasets.make_checkerboard_microstructure">
+<tt class="descclassname">pymks.datasets.</tt><tt class="descname">make_checkerboard_microstructure</tt><big>(</big><em>square_size</em>, <em>n_squares</em><big>)</big><a class="headerlink" href="#pymks.datasets.make_checkerboard_microstructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a checkerboard_microstructure with the <cite>square_size</cite> by
+<cite>square_size</cite> size squares and on a <cite>n_squares</cite> by <cite>n_squares</cite></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">square_size</span><span class="p">,</span> <span class="n">n_squares</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Xtest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">make_checkerboard_microstructure</span><span class="p">(</span><span class="n">square_size</span><span class="p">,</span> <span class="n">n_squares</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Xtest</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>square_size</strong> &#8211; length of the side of one square in the checkerboard.</li>
+<li><strong>n_squares</strong> &#8211; number of squares along on size of the checkerboard.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">checkerboard microstructure with shape of (1, square_size * n_squares,
+square_size * n_squares)</p>
 </td>
 </tr>
 </tbody>

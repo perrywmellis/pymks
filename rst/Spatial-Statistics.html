@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TB-Done &mdash; PyMKS</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.1.0/cosmo/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pymks.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="../_static/pymks_logo.ico"/>
+    <link rel="top" title="PyMKS" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            <li class="divider-vertical"></li>
+            
+                <li><a href="INSTALLATION.html">Installation</a></li>
+                <li><a href="../EXAMPLES.html">Examples</a></li>
+                <li><a href="../API.html">API</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">More <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CITATION.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="REQUIREMENTS.html">Requirements</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="code python highlight-python"><div class="highlight"><pre><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;https://farm8.staticflickr.com/7368/12972465885_1bcb9717bd_c.jpg&#39;</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><pre>%matplotlib inline
+import numpy as np
+from skimage import io
+import matplotlib.pyplot as plt</pre>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">Vf</span><span class="p">(</span> <span class="n">A</span> <span class="p">):</span>
+    <span class="c"># Compute value fraction of the image</span>
+    <span class="c"># This should match the max in the autocorrelation</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">A</span><span class="o">.</span><span class="n">size</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">pad_sz</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">periodicity</span> <span class="p">):</span>
+<span class="c"># Export the size of the sampled data and the size of the data for the fourier transform</span>
+
+    <span class="c"># Shape of array</span>
+    <span class="n">realsz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+    <span class="k">print</span> <span class="n">realsz</span>
+    <span class="n">lenmult</span> <span class="o">=</span> <span class="mi">1</span> <span class="c"># Should be proportional the largest vector requested</span>
+
+    <span class="c"># Defined the passed region for the convolution</span>
+    <span class="k">print</span> <span class="n">realsz</span>
+    <span class="k">print</span> <span class="p">(</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">*</span> <span class="n">lenmult</span>
+    <span class="n">spectralsz</span> <span class="o">=</span> <span class="n">realsz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">realsz</span><span class="p">,</span> <span class="p">(</span> <span class="n">periodicity</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">*</span> <span class="n">lenmult</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">realsz</span><span class="p">,</span> <span class="n">spectralsz</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span> <span class="n">szreal</span><span class="p">,</span> <span class="n">szspectral</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="bp">None</span> <span class="p">):</span>
+<span class="c"># Name the variables based on the reference and moving features</span>
+    <span class="k">print</span> <span class="s">&#39;A before:&#39;</span><span class="p">,</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">fA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">szspectral</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">B</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># Use [Wiener Kichin](http://en.wikipedia.org/wiki/Wiener%E2%80%93Khinchin_theorem)</span>
+<span class="c">###        fA = np.abs( fA )</span>
+<span class="c">#        fA = fA ** 2</span>
+        <span class="k">print</span> <span class="s">&#39;fA type:&#39;</span><span class="p">,</span><span class="n">fA</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">fA</span> <span class="o">=</span> <span class="n">fA</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">fA</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;Weiner&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Brute Force FFT approach for different states</span>
+        <span class="n">fA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">fA</span> <span class="p">,</span>
+                          <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span> <span class="n">B</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">szspectral</span><span class="p">)</span>
+                                 <span class="p">)</span> <span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;Other&#39;</span>
+
+    <span class="k">print</span> <span class="s">&#39;fA shape&#39;</span><span class="p">,</span> <span class="n">fA</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">print</span> <span class="s">&#39;szspectral&#39;</span><span class="p">,</span> <span class="n">szspectral</span>
+
+    <span class="c">#fA = np.fft.ifftn( fA, s = szspectral )</span>
+    <span class="n">fA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span><span class="n">fA</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fA</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">stats</span><span class="p">(</span> <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">periodic</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">shift</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+
+
+    <span class="c"># Assume data is non-periodic unless defined</span>
+    <span class="k">if</span> <span class="n">periodic</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">periodic</span> <span class="o">=</span> <span class="bp">False</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+                                <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">head</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="p">,)</span>
+                                  <span class="p">)</span>
+
+    <span class="n">sz_real</span><span class="p">,</span> <span class="n">sz_spectral</span> <span class="o">=</span> <span class="n">pad_sz</span><span class="p">(</span> <span class="n">head</span><span class="p">,</span> <span class="n">periodic</span> <span class="p">)</span>
+
+    <span class="c"># Pass Image into Convolution</span>
+    <span class="k">if</span> <span class="n">tail</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">numer</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">sz_real</span><span class="p">,</span> <span class="n">sz_spectral</span><span class="p">,</span> <span class="n">head</span> <span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;check:&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">real_if_close</span><span class="p">(</span><span class="n">numer</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">print</span> <span class="s">&#39;imag&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">numer</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">numer</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">sz_real</span><span class="p">,</span> <span class="n">sz_spectral</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="p">)</span>
+
+    <span class="c"># Numerator of materials dependent information</span>
+    <span class="n">normalizer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">sz_real</span> <span class="p">)</span>
+
+    <span class="c"># Denominator of sensor dependent information</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">sz_real</span><span class="p">,</span> <span class="n">sz_spectral</span><span class="p">,</span> <span class="n">normalizer</span> <span class="p">)</span>
+
+    <span class="c"># Normalize Statistics</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">numer</span><span class="p">,</span> <span class="n">denom</span> <span class="p">)</span>
+
+    <span class="c"># Shift the image</span>
+    <span class="k">if</span> <span class="n">shift</span><span class="p">:</span>
+        <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span> <span class="n">F</span> <span class="p">)</span>
+
+    <span class="c"># Plot the Image</span>
+<span class="c">#    if len( sz_real ) == 2:</span>
+<span class="c">#        plt.imshow( F.real )</span>
+
+    <span class="k">return</span> <span class="n">F</span><span class="p">,</span> <span class="n">numer</span><span class="p">,</span> <span class="n">denom</span>
+
+    <span class="c"># The statistics need to be trimmed and the vector values need to assigned</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="c"># Transform image to normalize eigen structure</span>
+<span class="n">Aim</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span> <span class="n">url</span> <span class="p">);</span>
+
+<span class="k">print</span> <span class="n">Aim</span><span class="o">.</span><span class="n">shape</span>
+<span class="k">def</span> <span class="nf">basis</span><span class="p">(</span> <span class="n">Aim</span> <span class="p">):</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">Aim</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="s">&#39;double&#39;</span> <span class="p">)</span> <span class="o">/</span> <span class="mi">255</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">A</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">basis</span><span class="p">(</span><span class="n">Aim</span><span class="p">)</span>
+
+<span class="n">io</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">602</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/Spatial-Statistics_6_1.png" src="../_images/Spatial-Statistics_6_1.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">io</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">Aim</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/Spatial-Statistics_7_0.png" src="../_images/Spatial-Statistics_7_0.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">F</span><span class="p">,</span> <span class="n">numer</span><span class="p">,</span> <span class="n">denom</span> <span class="o">=</span> <span class="n">stats</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="c">#, periodic=[True, True])</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>[602 800]
+[602 800]
+[1 1]
+A before: float64
+fA type: complex128
+Weiner
+fA shape (1204, 1600)
+szspectral [1204 1600]
+check: complex128
+imag [ -2.10487218e-10  -2.04789313e-10  -2.03422424e-10 ...,   8.88928820e-10
+   9.43439352e-10   1.10349907e-09]
+A before: float64
+fA type: complex128
+Weiner
+fA shape (1204, 1600)
+szspectral [1204 1600]</pre>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;Real&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">numer</span><span class="o">.</span><span class="n">real</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">numer</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Imag&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">numer</span><span class="o">.</span><span class="n">imag</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">numer</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+<span class="n">numer_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">numer</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">numer_shift</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>Real -2.35924738586e-11 225588.0
+Imag -2.10487217561e-10 1.10349907185e-09</pre>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.image.AxesImage at 0x7f4ff3f73890&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_9_2.png" src="../_images/Spatial-Statistics_9_2.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;Real&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">denom</span><span class="o">.</span><span class="n">real</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">denom</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Imag&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">denom</span><span class="o">.</span><span class="n">imag</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">denom</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+<span class="n">denom_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">denom</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">denom_shift</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>Real -1.06105700822e-10 481600.0
+Imag -8.70537486844e-10 1.97749729696e-09</pre>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.image.AxesImage at 0x7f4ff3eb6050&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_10_2.png" src="../_images/Spatial-Statistics_10_2.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.colorbar.Colorbar instance at 0x7f4ff888cc68&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_11_1.png" src="../_images/Spatial-Statistics_11_1.png" />
+<div class="section" id="tb-done">
+<h1>TB-Done<a class="headerlink" href="#tb-done" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Trim vectors on the statistics</li>
+<li>Add cutoff</li>
+</ul>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">Vf</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="mf">0.46841362126245845</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">);</span>
+<span class="n">L2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="n">L</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">fA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span>
+                     <span class="n">s</span> <span class="o">=</span> <span class="n">L2</span> <span class="p">,</span>
+                     <span class="n">axes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">);</span>
+
+<span class="n">fB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span>
+                     <span class="n">s</span> <span class="o">=</span> <span class="n">L2</span> <span class="p">,</span>
+                     <span class="n">axes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">);</span>
+
+<span class="n">fA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">fA</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span> <span class="n">fB</span> <span class="p">)</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">fA</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">602</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">903</span><span class="p">,</span> <span class="mi">1200</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">numer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span> <span class="n">fA</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span> <span class="n">numer</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.image.AxesImage at 0x7ffbc05f3290&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_17_1.png" src="../_images/Spatial-Statistics_17_1.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">L</span> <span class="p">);</span>
+<span class="k">print</span> <span class="n">N</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">fN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span> <span class="n">N</span><span class="p">,</span>
+                     <span class="n">s</span> <span class="o">=</span> <span class="n">L2</span> <span class="p">,</span>
+                     <span class="n">axes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">);</span>
+
+<span class="k">print</span>
+
+<span class="n">fN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span> <span class="n">fN</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">fN</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="k">print</span> <span class="n">fN</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">602</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+
+<span class="p">(</span><span class="mi">903</span><span class="p">,</span> <span class="mi">1200</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">denom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span> <span class="n">fN</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span> <span class="n">denom</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.image.AxesImage at 0x7ffbc05c8490&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_19_1.png" src="../_images/Spatial-Statistics_19_1.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">numer</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">denom</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">F</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="mf">0.18927466666666659</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="mi">2</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">numer</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">A</span> <span class="p">);</span>
+<span class="n">denom</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="p">)</span>
+<span class="n">stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">numer</span><span class="p">,</span> <span class="n">denom</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">stats</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span> <span class="n">stats</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Weiner</span>
+<span class="n">Weiner</span>
+<span class="mf">0.468413621262</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.image.AxesImage at 0x12771ba90&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_23_2.png" src="../_images/Spatial-Statistics_23_2.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">numer</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="p">)</span>
+<span class="n">denom</span> <span class="o">=</span> <span class="n">convolve</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">),</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span> <span class="n">numer</span><span class="p">,</span> <span class="n">denom</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">stats</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span> <span class="n">stats</span><span class="o">.</span><span class="n">real</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Other</span>
+<span class="n">Weiner</span>
+<span class="mf">0.500122859729</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>&lt;matplotlib.image.AxesImage at 0x127091190&gt;</pre>
+</div>
+<img alt="../_images/Spatial-Statistics_24_2.png" src="../_images/Spatial-Statistics_24_2.png" />
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">array</span><span class="p">([</span><span class="mi">1204</span><span class="p">,</span> <span class="mi">1600</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Wiener%E2%80%93Khinchin_theorem">Wiener
+Kichin</a>
+is a compact way to compute the autcorrelation.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="o">...</span><span class="p">,</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">uint8</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="n">L</span>
+<span class="n">L2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="n">L</span> <span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+<span class="k">print</span> <span class="n">L2</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>[375 500]
+[562 750]</pre>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

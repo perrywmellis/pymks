@@ -111,14 +111,9 @@ split can be set using ``random_state``.
     import sklearn
     from sklearn.cross_validation import train_test_split
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=3)
-    print X_train.shape
-
-.. parsed-literal::
-
-    (200, 41, 41)
-
-
+    split_shape = (X.shape[0],) + (np.product(X.shape[1:]),)
+    X_train, X_test, y_train, y_test = train_test_split(X.reshape(split_shape), y.reshape(split_shape),
+                                                        test_size=0.5, random_state=3)
 We are now going to calibrate the influence coefficients while varying
 the number of local states from 2 up to 20. Each of these models will
 then predict the evolution of the concentration fields. Mean square
@@ -152,7 +147,7 @@ overfit the data.
     basis = ContinuousIndicatorBasis(2, [-1, 1])
     model = MKSRegressionModel(basis)
     scoring = metrics.make_scorer(lambda a, b: -mse(a, b))
-    gs = GridSearchCV(model, parameters_to_tune, cv=5, scoring=scoring)
+    gs = GridSearchCV(model, parameters_to_tune, cv=5, scoring=scoring, fit_params={'size': (L, L)})
     gs.fit(X_train, y_train)
 
 
@@ -160,9 +155,9 @@ overfit the data.
 .. parsed-literal::
 
     GridSearchCV(cv=5,
-           estimator=MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7f484b2c68d0>,
+           estimator=MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae3801a590>,
               n_states=2),
-           fit_params={}, iid=True, loss_func=None, n_jobs=1,
+           fit_params={'size': (41, 41)}, iid=True, loss_func=None, n_jobs=1,
            param_grid={'n_states': array([ 2,  3,  4,  5,  6,  7,  8,  9, 10])},
            pre_dispatch='2*n_jobs', refit=True, score_func=None,
            scoring=make_scorer(<lambda>), verbose=0)
@@ -176,7 +171,7 @@ overfit the data.
 
 .. parsed-literal::
 
-    MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7f484b3d64d0>,
+    MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae38174b50>,
               n_states=10)
     0.99999908222
 
@@ -230,7 +225,7 @@ Cahn-Hilliard simulation we need an instance of the class
     from pymks.datasets.cahn_hilliard_simulation import CahnHilliardSimulation
     np.random.seed(191)
     
-    phi0 = 2 * np.random.random((1, L, L)) - 1
+    phi0 = np.random.normal(0, 1e-9, (1, L, L))
     CHSim = CahnHilliardSimulation(dt=dt)
     phi = phi0.copy()
     phi_pred = phi0.copy()
@@ -273,7 +268,7 @@ coefficients and provide a larger initial concentratio field.
     N = 3 * L
     MKSmodel.resize_coeff((N, N))
     
-    phi0 = 2 * np.random.random((1, N, N)) - 1
+    phi0 = np.random.normal(0, 1e-9, (1, N, N))
     phi = phi0.copy()
     phi_pred = phi0.copy()
 Once again we are going to march forward in time by feeding the

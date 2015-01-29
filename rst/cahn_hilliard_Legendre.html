@@ -64,7 +64,7 @@
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -232,7 +232,8 @@ domain given by <tt class="docutils literal"><span class="pre">size</span></tt>.
 <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">400</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="mf">1e-2</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_cahn_hilliard</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_cahn_hilliard</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The function <tt class="docutils literal"><span class="pre">make_cahnHilliard</span></tt> has generated <tt class="docutils literal"><span class="pre">n_samples</span></tt> number of
@@ -273,16 +274,21 @@ parameters with a grid search.</p>
 <span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">MKSRegressionModel</span>
 <span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 
-<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">train_split_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),)</span>
 
-<span class="n">continuousBasis</span> <span class="o">=</span> <span class="n">ContinuousIndicatorBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">legendreBasis</span> <span class="o">=</span> <span class="n">LegendreBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train_split_shape</span><span class="p">),</span>
+                                                    <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train_split_shape</span><span class="p">),</span>
+                                                    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-<span class="n">parameters_to_tune</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_states&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span>
-                      <span class="s">&#39;basis&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">continuousBasis</span><span class="p">,</span> <span class="n">legendreBasis</span><span class="p">]}</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">MKSRegressionModel</span><span class="p">(</span><span class="n">continuousBasis</span><span class="p">)</span>
+<span class="n">continuous_basis</span> <span class="o">=</span> <span class="n">ContinuousIndicatorBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">legendre_basis</span> <span class="o">=</span> <span class="n">LegendreBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">params_to_tune</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_states&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span>
+                 <span class="s">&#39;basis&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">continuous_basis</span><span class="p">,</span> <span class="n">legendre_basis</span><span class="p">]}</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MKSRegressionModel</span><span class="p">(</span><span class="n">continuous_basis</span><span class="p">)</span>
 <span class="n">scoring</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">make_scorer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="o">-</span><span class="n">mse</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
-<span class="n">gs</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters_to_tune</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">fit_params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="n">size</span><span class="p">}</span>
+<span class="n">gs</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">params_to_tune</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span> <span class="n">fit_params</span><span class="o">=</span><span class="n">fit_params</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The optimal parameters are a Legendre polynomial basis with only 4
@@ -291,16 +297,16 @@ terms. More terms don&#8217;t improve the mean square error.</p>
 <span class="k">print</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-python"><pre>MKSRegressionModel(basis=&lt;pymks.bases.legendre.LegendreBasis object at 0x7f0cd8778bd0&gt;,
+<div class="highlight-python"><pre>MKSRegressionModel(basis=&lt;pymks.bases.legendre.LegendreBasis object at 0x7f6a19bd5110&gt;,
           n_states=4)
 1.0</pre>
 </div>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_gridscores</span>
 
 <span class="n">lgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span> \
-       <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s">&#39;basis&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">legendreBasis</span><span class="p">)]</span>
+       <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s">&#39;basis&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">legendre_basis</span><span class="p">)]</span>
 <span class="n">cgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span> \
-       <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s">&#39;basis&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">continuousBasis</span><span class="p">)]</span>
+       <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s">&#39;basis&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">continuous_basis</span><span class="p">)]</span>
 
 <span class="n">draw_gridscores</span><span class="p">(</span><span class="n">lgs</span><span class="p">,</span> <span class="s">&#39;Legendre&#39;</span><span class="p">,</span> <span class="s">&#39;#f46d43&#39;</span><span class="p">)</span>
 <span class="n">draw_gridscores</span><span class="p">(</span><span class="n">cgs</span><span class="p">,</span> <span class="s">&#39;Continuous&#39;</span><span class="p">,</span> <span class="s">&#39;#1a9641&#39;</span><span class="p">)</span>
@@ -352,7 +358,7 @@ the Cahn-Hilliard simulation we need an instance of the class
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.datasets.cahn_hilliard_simulation</span> <span class="kn">import</span> <span class="n">CahnHilliardSimulation</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span>
 
-<span class="n">phi0</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="p">((</span><span class="n">n_samples</span><span class="p">,)</span> <span class="o">+</span> <span class="n">size</span><span class="p">))</span>
 <span class="n">CHSim</span> <span class="o">=</span> <span class="n">CahnHilliardSimulation</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
 <span class="n">phi</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">phi_bin_pred</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -389,8 +395,8 @@ and the simulation.</p>
 <span class="k">print</span> <span class="s">&#39;Legendre mse =&#39;</span><span class="p">,</span><span class="n">mse</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phi_legendre_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-python"><pre>Bin mse = 1.80502822095e-05
-Legendre mse = 2.41297167879e-28</pre>
+<div class="highlight-python"><pre>Bin mse = 5.80547312672e-23
+Legendre mse = 5.21327839227e-28</pre>
 </div>
 <img alt="../_images/cahn_hilliard_Legendre_28_1.png" src="../_images/cahn_hilliard_Legendre_28_1.png" />
 <p>The Legendre polynomial basis clearly out performs the binned basis for
@@ -400,7 +406,7 @@ the same value of <tt class="docutils literal"><span class="pre">n_states</span>
 <span class="n">BinModel</span><span class="o">.</span><span class="n">resize_coeff</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
 <span class="n">LegendreModel</span><span class="o">.</span><span class="n">resize_coeff</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
 
-<span class="n">phi0</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
 <span class="n">phi</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">phi_bin_pred</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">phi_legendre_pred</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -442,8 +448,8 @@ look at the difference between the simulation and the MKS models.</p>
 <span class="k">print</span> <span class="s">&#39;Legendre mse =&#39;</span><span class="p">,</span><span class="n">mse</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phi_legendre_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-python"><pre>Bin mse = 0.0224155756811
-Legendre mse = 4.50746556477e-08</pre>
+<div class="highlight-python"><pre>Bin mse = 5.40824187588e-19
+Legendre mse = 5.11343260074e-25</pre>
 </div>
 <img alt="../_images/cahn_hilliard_Legendre_40_1.png" src="../_images/cahn_hilliard_Legendre_40_1.png" />
 <p>With the resized influence coefficients, the Legendre polynomial

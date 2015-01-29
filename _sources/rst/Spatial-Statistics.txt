@@ -1,0 +1,449 @@
+
+.. code:: python
+
+    url = 'https://farm8.staticflickr.com/7368/12972465885_1bcb9717bd_c.jpg'
+.. code:: python
+
+    %matplotlib inline
+    import numpy as np
+    from skimage import io
+    import matplotlib.pyplot as plt
+.. code:: python
+
+    def Vf( A ):
+        # Compute value fraction of the image
+        # This should match the max in the autocorrelation
+        return A.sum()/A.size
+.. code:: python
+
+    def pad_sz( A, periodicity ):
+    # Export the size of the sampled data and the size of the data for the fourier transform
+    
+        # Shape of array
+        realsz = np.array( A.shape )
+        print realsz
+        lenmult = 1 # Should be proportional the largest vector requested
+        
+        # Defined the passed region for the convolution
+        print realsz
+        print ( periodicity == 0 ) * lenmult
+        spectralsz = realsz + np.multiply( realsz, ( periodicity == 0 ) * lenmult )
+        
+        return realsz, spectralsz
+.. code:: python
+
+    def convolve( szreal, szspectral, A, B = None ):
+    # Name the variables based on the reference and moving features
+        print 'A before:',A.dtype
+        fA = np.fft.fftn( A, s = szspectral )
+        
+        if B is None:
+            # Use [Wiener Kichin](http://en.wikipedia.org/wiki/Wiener%E2%80%93Khinchin_theorem)
+    ###        fA = np.abs( fA )
+    #        fA = fA ** 2 
+            print 'fA type:',fA.dtype
+            fA = fA * np.conj(fA)
+            print 'Weiner'
+        else: 
+            # Brute Force FFT approach for different states
+            fA = np.multiply( fA , 
+                              np.conj( 
+                                    np.fft.fftn( B, s = szspectral) 
+                                     ) )
+            print 'Other'
+    
+        print 'fA shape', fA.shape
+        print 'szspectral', szspectral
+            
+        #fA = np.fft.ifftn( fA, s = szspectral )
+        fA = np.fft.ifftn(fA)
+        
+        return fA
+.. code:: python
+
+    def stats( head, tail = None, periodic = None, shift = True):
+        
+    
+        # Assume data is non-periodic unless defined
+        if periodic is None:
+            periodic = False * np.ones( 
+                                    (len( head.shape ) ,) 
+                                      )
+    
+        sz_real, sz_spectral = pad_sz( head, periodic )        
+        
+        # Pass Image into Convolution
+        if tail is None:
+            numer = convolve( sz_real, sz_spectral, head )
+            print 'check:',np.real_if_close(numer).dtype
+            print 'imag', np.unique(numer.imag)
+        else:
+            numer = convolve( sz_real, sz_spectral, head, tail )
+    
+        # Numerator of materials dependent information
+        normalizer = np.ones( shape = sz_real )    
+        
+        # Denominator of sensor dependent information
+        denom = convolve( sz_real, sz_spectral, normalizer )
+        
+        # Normalize Statistics
+        F = np.divide( numer, denom )
+        
+        # Shift the image
+        if shift:
+            F = np.fft.ifftshift( F )
+        
+        # Plot the Image
+    #    if len( sz_real ) == 2:
+    #        plt.imshow( F.real )
+            
+        return F, numer, denom
+    
+        # The statistics need to be trimmed and the vector values need to assigned
+.. code:: python
+
+    # Transform image to normalize eigen structure
+    Aim = io.imread( url );
+    
+    print Aim.shape
+    def basis( Aim ):
+        A = Aim.astype( 'double' ) / 255;
+        return A.round()
+    
+    A = basis(Aim)
+    
+    io.imshow(A)
+
+.. parsed-literal::
+
+    (602, 800)
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_6_1.png
+
+
+.. code:: python
+
+    io.imshow(Aim)
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_7_0.png
+
+
+.. code:: python
+
+    F, numer, denom = stats(A, shift=False)#, periodic=[True, True])
+
+.. parsed-literal::
+
+    [602 800]
+    [602 800]
+    [1 1]
+    A before: float64
+    fA type: complex128
+    Weiner
+    fA shape (1204, 1600)
+    szspectral [1204 1600]
+    check: complex128
+    imag [ -2.10487218e-10  -2.04789313e-10  -2.03422424e-10 ...,   8.88928820e-10
+       9.43439352e-10   1.10349907e-09]
+    A before: float64
+    fA type: complex128
+    Weiner
+    fA shape (1204, 1600)
+    szspectral [1204 1600]
+
+
+.. code:: python
+
+    print 'Real', np.min(numer.real), np.max(numer.real)
+    print 'Imag', np.min(numer.imag), np.max(numer.imag)
+    numer_shift = np.fft.fftshift(numer.real)
+    plt.imshow(numer_shift)
+
+.. parsed-literal::
+
+    Real -2.35924738586e-11 225588.0
+    Imag -2.10487217561e-10 1.10349907185e-09
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.image.AxesImage at 0x7f4ff3f73890>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_9_2.png
+
+
+.. code:: python
+
+    print 'Real', np.min(denom.real), np.max(denom.real)
+    print 'Imag', np.min(denom.imag), np.max(denom.imag)
+    denom_shift = np.fft.fftshift(denom.real)
+    plt.imshow(denom_shift)
+
+.. parsed-literal::
+
+    Real -1.06105700822e-10 481600.0
+    Imag -8.70537486844e-10 1.97749729696e-09
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.image.AxesImage at 0x7f4ff3eb6050>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_10_2.png
+
+
+.. code:: python
+
+    
+    plt.imshow(F.real)
+    plt.colorbar()
+
+
+
+.. parsed-literal::
+
+    <matplotlib.colorbar.Colorbar instance at 0x7f4ff888cc68>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_11_1.png
+
+
+TB-Done
+-------
+
+-  Trim vectors on the statistics
+-  Add cutoff
+
+.. code:: python
+
+    Vf(A)
+
+
+
+.. parsed-literal::
+
+    0.46841362126245845
+
+
+
+
+
+.. code:: python
+
+    L = np.array( A.shape );
+    L2 = np.add( L , np.round( L/2) )
+    print A.shape
+    fA = np.fft.fftn( A, 
+                         s = L2 , 
+                         axes=np.array( [0,1] ) );
+    
+    fB = np.fft.fftn( A,
+                         s = L2 , 
+                         axes=np.array( [0,1] ) );
+    
+    fA = np.multiply( fA, np.conj( fB ) )
+    print fA.shape
+
+
+.. parsed-literal::
+
+    (602, 800)
+    (903, 1200)
+
+
+.. code:: python
+
+    numer = np.fft.ifftn( fA )
+    plt.imshow( np.fft.ifftshift( numer.real ) )
+
+
+
+.. parsed-literal::
+
+    <matplotlib.image.AxesImage at 0x7ffbc05f3290>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_17_1.png
+
+
+.. code:: python
+
+    N = np.ones( shape = L );
+    print N.shape
+    fN = np.fft.fftn( N, 
+                         s = L2 , 
+                         axes=np.array( [0,1] ) );
+    
+    print 
+    
+    fN = np.multiply( fN, np.conj(fN) )
+    
+    print fN.shape
+
+.. parsed-literal::
+
+    (602, 800)
+    
+    (903, 1200)
+
+
+.. code:: python
+
+    denom = np.fft.ifftn( fN )
+    plt.imshow( np.fft.ifftshift( denom.real ) )
+
+
+
+.. parsed-literal::
+
+    <matplotlib.image.AxesImage at 0x7ffbc05c8490>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_19_1.png
+
+
+.. code:: python
+
+    F = np.divide( numer.real, denom.real )
+.. code:: python
+
+    F.max()
+
+
+
+.. parsed-literal::
+
+    0.18927466666666659
+
+
+
+
+
+
+
+.. parsed-literal::
+
+    2
+
+
+
+.. code:: python
+
+    numer = convolve( A );
+    denom = convolve( np.ones( A.shape ) )
+    stats = np.divide( numer, denom )
+    print stats.real.max()
+    plt.imshow( np.fft.fftshift( stats.real ) )
+
+.. parsed-literal::
+
+    Weiner
+    Weiner
+    0.468413621262
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.image.AxesImage at 0x12771ba90>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_23_2.png
+
+
+.. code:: python
+
+    numer = convolve( A, A, shape = np.array( A.shape ) * 2 )
+    denom = convolve( np.ones( A.shape ), shape = np.array( A.shape ) * 2)
+    stats = np.divide( numer, denom )
+    print stats.real.max()
+    plt.imshow( np.fft.fftshift( stats.real ) )
+
+.. parsed-literal::
+
+    Other
+    Weiner
+    0.500122859729
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.image.AxesImage at 0x127091190>
+
+
+
+
+.. image:: Spatial-Statistics_files/Spatial-Statistics_24_2.png
+
+
+
+.. code:: python
+
+    np.array( A.shape ) * 2
+
+
+
+.. parsed-literal::
+
+    array([1204, 1600])
+
+
+
+`Wiener
+Kichin <http://en.wikipedia.org/wiki/Wiener%E2%80%93Khinchin_theorem>`__
+is a compact way to compute the autcorrelation.
+
+.. code:: python
+
+    np.abs(A)
+
+
+
+.. parsed-literal::
+
+    array([[0, 0, 0, ..., 0, 0, 1],
+           [0, 0, 0, ..., 0, 1, 1],
+           [0, 0, 0, ..., 1, 1, 1],
+           ..., 
+           [0, 1, 0, ..., 0, 0, 1],
+           [0, 0, 0, ..., 1, 1, 0],
+           [0, 0, 0, ..., 0, 0, 0]], dtype=uint8)
+
+
+
+
+.. code:: python
+
+    print L
+    L2 = np.add( L , np.round( L/2) )
+    print L2
+
+.. parsed-literal::
+
+    [375 500]
+    [562 750]
+

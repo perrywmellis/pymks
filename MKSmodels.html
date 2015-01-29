@@ -64,7 +64,7 @@
                 <li><a href="rst/INSTALLATION.html">Installation</a></li>
                 <li><a href="EXAMPLES.html">Examples</a></li>
                 <li><a href="API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -192,7 +192,7 @@ center.</p>
 
 <dl class="method">
 <dt id="pymks.mks_regression_model.MKSRegressionModel.fit">
-<tt class="descname">fit</tt><big>(</big><em>X</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymks.mks_regression_model.MKSRegressionModel.fit" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">fit</tt><big>(</big><em>X</em>, <em>y</em>, <em>size=None</em><big>)</big><a class="headerlink" href="#pymks.mks_regression_model.MKSRegressionModel.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fits the data by calculating a set of influence coefficients.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -211,10 +211,13 @@ center.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>X</strong> &#8211; the microstructure function, an <cite>(S, N, ...)</cite> shaped
+<li><strong>X</strong> &#8211; The microstructure function, an <cite>(S, N, ...)</cite> shaped
 array where <cite>S</cite> is the number of samples and <cite>N</cite> is the
 spatial discretization.</li>
 <li><strong>y</strong> &#8211; The response field, same shape as <cite>X</cite>.</li>
+<li><strong>size</strong> &#8211; Alters the shape of X and y during the calibration of the
+influence coefficients. If None, the size of the influence
+coefficients is the same shape as <cite>X</cite> and <cite>y</cite>.</li>
 </ul>
 </td>
 </tr>

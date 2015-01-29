@@ -151,7 +151,8 @@ domain given by ``size``.
     n_samples = 400
     dt = 1e-2
     np.random.seed(101)
-    X, y = make_cahn_hilliard(n_samples=n_samples, size=(L, L), dt=dt)
+    size=(L, L)
+    X, y = make_cahn_hilliard(n_samples=n_samples, size=size, dt=dt)
 The function ``make_cahnHilliard`` has generated ``n_samples`` number of
 random microstructures, ``X``, and returned the same microstructures
 after they have evolved for one time step given by ``y``. Let's take a
@@ -201,16 +202,21 @@ parameters with a grid search.
     from pymks import MKSRegressionModel
     from sklearn.cross_validation import train_test_split
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=3)
+    train_split_shape = (X.shape[0],) + (np.prod(X.shape[1:]),)
     
-    continuousBasis = ContinuousIndicatorBasis(2, [-1, 1])
-    legendreBasis = LegendreBasis(2, [-1, 1])
+    X_train, X_test, y_train, y_test = train_test_split(X.reshape(train_split_shape),
+                                                        y.reshape(train_split_shape),
+                                                        test_size=0.5, random_state=3)
     
-    parameters_to_tune = {'n_states': np.arange(2, 11),
-                          'basis': [continuousBasis, legendreBasis]}
-    model = MKSRegressionModel(continuousBasis)
+    continuous_basis = ContinuousIndicatorBasis(2, [-1, 1])
+    legendre_basis = LegendreBasis(2, [-1, 1])
+    
+    params_to_tune = {'n_states': np.arange(2, 11),
+                     'basis': [continuous_basis, legendre_basis]}
+    model = MKSRegressionModel(continuous_basis)
     scoring = metrics.make_scorer(lambda a, b: -mse(a, b))
-    gs = GridSearchCV(model, parameters_to_tune, cv=5, scoring=scoring).fit(X_train, y_train)
+    fit_params = {'size': size}
+    gs = GridSearchCV(model, params_to_tune, cv=5, scoring=scoring, fit_params=fit_params).fit(X_train, y_train)
 The optimal parameters are a Legendre polynomial basis with only 4
 terms. More terms don't improve the mean square error.
 
@@ -221,7 +227,7 @@ terms. More terms don't improve the mean square error.
 
 .. parsed-literal::
 
-    MKSRegressionModel(basis=<pymks.bases.legendre.LegendreBasis object at 0x7f0cd8778bd0>,
+    MKSRegressionModel(basis=<pymks.bases.legendre.LegendreBasis object at 0x7f6a19bd5110>,
               n_states=4)
     1.0
 
@@ -231,9 +237,9 @@ terms. More terms don't improve the mean square error.
     from pymks.tools import draw_gridscores
     
     lgs = [x for x in gs.grid_scores_ \
-           if type(x.parameters['basis']) is type(legendreBasis)]
+           if type(x.parameters['basis']) is type(legendre_basis)]
     cgs = [x for x in gs.grid_scores_ \
-           if type(x.parameters['basis']) is type(continuousBasis)]
+           if type(x.parameters['basis']) is type(continuous_basis)]
     
     draw_gridscores(lgs, 'Legendre', '#f46d43')
     draw_gridscores(cgs, 'Continuous', '#1a9641')
@@ -302,7 +308,7 @@ the Cahn-Hilliard simulation we need an instance of the class
     from pymks.datasets.cahn_hilliard_simulation import CahnHilliardSimulation
     np.random.seed(66)
     
-    phi0 = 2 * np.random.random((1, L, L)) - 1
+    phi0 = np.random.normal(0, 1e-9, ((n_samples,) + size))
     CHSim = CahnHilliardSimulation(dt=dt)
     phi = phi0.copy()
     phi_bin_pred = phi0.copy()
@@ -349,8 +355,8 @@ and the simulation.
 
 .. parsed-literal::
 
-    Bin mse = 1.80502822095e-05
-    Legendre mse = 2.41297167879e-28
+    Bin mse = 5.80547312672e-23
+    Legendre mse = 5.21327839227e-28
 
 
 
@@ -371,7 +377,7 @@ Below we compare the bases after the coefficients are resized.
     BinModel.resize_coeff((N, N))
     LegendreModel.resize_coeff((N, N))
     
-    phi0 = 2 * np.random.random((1, N, N)) - 1
+    phi0 = np.random.normal(0, 1e-9, (1, N, N))
     phi = phi0.copy()
     phi_bin_pred = phi0.copy()
     phi_legendre_pred = phi0.copy()
@@ -432,8 +438,8 @@ look at the difference between the simulation and the MKS models.
 
 .. parsed-literal::
 
-    Bin mse = 0.0224155756811
-    Legendre mse = 4.50746556477e-08
+    Bin mse = 5.40824187588e-19
+    Legendre mse = 5.11343260074e-25
 
 
 
