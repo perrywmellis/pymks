@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Derivation of Materials Knowledge Systems Equation using Linear Elasticity &mdash; PyMKS</title>
+    <title>Derivation of MKS Localization Equation &mdash; PyMKS</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -34,7 +34,7 @@
     <link rel="shortcut icon" href="../_static/pymks_logo.ico"/>
     <link rel="top" title="PyMKS" href="../index.html" />
     <link rel="up" title="Theory" href="../THEORY.html" />
-    <link rel="next" title="Authors" href="CREDITS.html" />
+    <link rel="next" title="Technical Overview" href="tech_overview.html" />
     <link rel="prev" title="Theory" href="../THEORY.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -55,8 +55,8 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -65,7 +65,7 @@
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -78,7 +78,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../THEORY.html">Theory</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -106,11 +107,11 @@
   <div class="row">
     <div class="col-md-12">
       
-  <div class="section" id="derivation-of-materials-knowledge-systems-equation-using-linear-elasticity">
-<h1>Derivation of Materials Knowledge Systems Equation using Linear Elasticity<a class="headerlink" href="#derivation-of-materials-knowledge-systems-equation-using-linear-elasticity" title="Permalink to this headline">¶</a></h1>
-<p>The goal of this notebook is to derivate the MKS equation from
-elastostatic equilibrium equation. Note that the MKS equation can be
-derivated from other partial differential equations.</p>
+  <div class="section" id="derivation-of-mks-localization-equation">
+<h1>Derivation of MKS Localization Equation<a class="headerlink" href="#derivation-of-mks-localization-equation" title="Permalink to this headline">¶</a></h1>
+<p>The goal of this notebook is to derivate the Materials Knowledge Systems
+(MKS) equation from elastostatic equilibrium equation. Note that the MKS
+equation can be derivated from other partial differential equations.</p>
 <div class="section" id="definitions">
 <h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h2>
 <p>Let <span class="math">\(C(x)\)</span> be the local stiffness tensor for a two phase material
@@ -173,7 +174,9 @@ equilibrium equation can be rewritten as follows.</p>
 <p>The equation above can be recast with all of the derivatives on the
 green&#8217;s functions by integrating by parts.</p>
 <div class="math">
-\[\varepsilon'_{kl}(x) = \Bigg [ \int_S \frac{\big (G_{ik,l}(r) + G_{il,k}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ] n_j dS\Bigg ]_{r \rightarrow 0}^{r \rightarrow \infty} -  \int_V \frac{\big (G_{ik,lj}(r) + G_{il,kj}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]dr\]</div>
+\[\varepsilon'_{kl}(x) = \Bigg [ \int_S \frac{\big (G_{ik,l}(r) + G_{il,k}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ] n_j dS\Bigg ]_{r \rightarrow 0}^{r \rightarrow \infty} -\]</div>
+<div class="math">
+\[\int_V \frac{\big (G_{ik,lj}(r) + G_{il,kj}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]dr\]</div>
 </div>
 <div class="section" id="principal-value-singularity">
 <h2>Principal Value Singularity<a class="headerlink" href="#principal-value-singularity" title="Permalink to this headline">¶</a></h2>
@@ -202,14 +205,14 @@ from the singularity.</p>
 <div class="math">
 \[\varepsilon'_{kl}(x) = \int_V \Gamma_{ikjl}(r) \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]dr\]</div>
 </div>
-<div class="section" id="kroner-s-expansion">
-<h2>Kroner&#8217;s Expansion<a class="headerlink" href="#kroner-s-expansion" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="weak-contrast-expansion">
+<h2>Weak Contrast Expansion<a class="headerlink" href="#weak-contrast-expansion" title="Permalink to this headline">¶</a></h2>
 <div class="math">
 \[\varepsilon'(x) =\int_V \Gamma(r) C'(x-r) [ \bar{\varepsilon} + \varepsilon'(x-r)]dr\]</div>
 <p>By recursively inserting <span class="math">\(\varepsilon'(x)\)</span> into the LHS of the
 equation, we get the following series.</p>
 <div class="math">
-\[\varepsilon'(x) =\int_V \Gamma(r) C'(x-r) \bar{\varepsilon} dr +\int_V \int_V \Big[ \Gamma(r) C'(x-r)\bar{\varepsilon}\Big ]\Big [\Gamma(r')  C'(x-r') \bar{\varepsilon}\Big] dr'dr + \int_V \int_V \int_V \Big[ \Gamma(r) C'(x-r)\bar{\varepsilon}\Big] \Big[  \Gamma(r')C'(x-r') \bar{\varepsilon}\Big] \Big[  \Gamma(r'')  C'(x-r'')\bar{\varepsilon} \Big]dr''dr'dr + ...\]</div>
+\[\varepsilon'(x) =\int_V \Gamma(r) C'(x-r) \bar{\varepsilon} dr +\int_V \int_V \Big[ \Gamma(r) C'(x-r)\bar{\varepsilon}\Big ]\Big [\Gamma(r')  C'(x-r') \bar{\varepsilon}\Big] dr'dr + ...\]</div>
 <p>As long as</p>
 <div class="math">
 \[\begin{split}\Gamma(r) C'(x)\bar{\varepsilon} &lt;&lt; 1\end{split}\]</div>
@@ -220,25 +223,28 @@ resonable accuracy.</p>
 <h2>Materials Knowledge Systems<a class="headerlink" href="#materials-knowledge-systems" title="Permalink to this headline">¶</a></h2>
 <p>Let</p>
 <div class="math">
-\[C'(x-r) = C_h m_h(x-r)\]</div>
-<p>where the summation over <span class="math">\(h\)</span> discribes all of the local states of
-the stiffness tensor <span class="math">\(C'(r)\)</span>. <span class="math">\(m_h(r)\)</span> is the microstructure
-function and is an indicator function for each of the local states.</p>
+\[C'(x-r) = \int_H h m(h, x-r) dh\]</div>
+<p>where <span class="math">\(m(h, r)\)</span> is the microstructure function which is a
+probablity density that spans both the local state space <span class="math">\(h\)</span> and
+real space <span class="math">\(x\)</span>. The expectation of local state variable for the
+microstructure function is the integral over the local state space
+<span class="math">\(H\)</span> and discribes the expected local state <span class="math">\(h\)</span> which is
+equal to <span class="math">\(C'(r)\)</span>.</p>
 <p>Also let</p>
 <div class="math">
-\[\alpha_h(r) = \Gamma(r)C_h\bar{\varepsilon}\]</div>
+\[\alpha(h, r) = \Gamma(r) h \bar{\varepsilon}\]</div>
 <div class="math">
-\[\alpha_{hh'}(r,r') = \Gamma(r)C_h\bar{\varepsilon} \Gamma(r') C_{h'} \bar{\varepsilon}\]</div>
+\[\alpha(h, h', r, r') = \Gamma(r) h \bar{\varepsilon} \Gamma(r') h' \bar{\varepsilon}\]</div>
 <div class="math">
 \[etc...\]</div>
-<p>where again <span class="math">\(h\)</span> is the local state.</p>
-<p>Plugging these definitations into Kroner&#8217;s expansion recasts the series
-in the following form.</p>
+<p>where again <span class="math">\(h\)</span> is the local state variable.</p>
+<p>Plugging these definitations into the Weak Contrast Expansion recasts
+the series in the following form.</p>
 <div class="math">
-\[\varepsilon'(x) =\int_V \alpha_h(r) m_h(x-r) dr +\int_V \int_V \alpha_{hh'}(r,r') m_h(x-r) m_{h'}(x-r') dr'dr+ \int_V \int_V \int_V \alpha_{hh'h''}(r,r',r'')m_h(x-r) m_{h'}(x-r') m_{h''}(x-r'')dr''dr'dr + ...\]</div>
-<p>The discrete version of this equation is the MKS.</p>
+\[\varepsilon '(x) =\int_V \int_H \alpha(h, r) m(h, x-r) dr + \int_V \int_V \alpha_(h, h', r, r') m(h, x-r) m(h', x-r') dr'dr + ...\]</div>
+<p>The discrete version of this equation is the MKS localization.</p>
 <div class="math">
-\[\varepsilon'[x] =\sum_{r=1}^S \alpha_h[r] m_h[x-r] +\sum_{r=1}^S \sum_{r'=1}^S \alpha_{hh'}[r,r'] m_h[x-r] m_{h'}[x-r'] + \sum_{r=1}^S \sum_{r'=1}^S \sum_{r''=1}^S \alpha_{hh'h''}[r,r',r'']m_h(x-r) m_{h'}[x-r'] m_{h''}[x-r'']+ ...\]</div>
+\[\varepsilon'[s] = \sum_{l=0}^{L-1} \sum_{r=0}^{S-1} \alpha[l, r] m[l, s-r] +\sum_{l=0}^{L-1} \sum_{l'=0}^{L-1} \sum_{r=0}^{S-1} \sum_{r'=0}^{S-1} \alpha[l, l', r, r'] m[l, s-r] m_[l', s-r'] + ...\]</div>
 <div class="section" id="references">
 <h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
 <p>[1] Torquato, S., 1997. <em>Effective stiffness tensor of composite media.

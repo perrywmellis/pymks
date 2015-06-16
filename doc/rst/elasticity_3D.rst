@@ -40,26 +40,6 @@ given by,
 
 .. math::  u(x, y, 0) = u(x, y, L) 
 
-Unfortunaltely, we can't implement these boundary conditions with
-`SfePy <http://sfepy.org>`__, the closest we can get is
-
-.. math::  u(L, y, z) = L\bar{\varepsilon}_{xx}
-
-.. math::  u(0, y, z) = 0 
-
-.. math::  u(0, L, L) = u(0, 0, L) = u(0, L, 0) = u(0, 0, 0) = 0  
-
-.. math::  u(x, 0, z) = u(x, L, z) 
-
-.. math::  u(x, y, 0) = u(x, y, L)
-
-This leads to some issues near the edges of the domain and introduces
-errors into the resizing of the coefficients. We are working to fix this
-issue, but note that the problem is not with the MKS regression itself,
-but with the calibration data used. The finite element package ABAQUS
-includes the displaced periodic boundary condition and can be used to
-calibrate the MKS regression correctly.
-
 .. code:: python
 
     %matplotlib inline
@@ -96,14 +76,14 @@ fields using finite element methods.
 
 .. code:: python
 
-    L = 9
-    center = (L - 1) / 2
+    n = 9
+    center = (n - 1) / 2
     
     from pymks.tools import draw_microstructures
     from pymks.datasets import make_delta_microstructures
     
-    X_delta = make_delta_microstructures(n_phases=2, size=(L, L, L))
-    draw_microstructures(X_delta[0, center, :, :], X_delta[1, center, :, :])
+    X_delta = make_delta_microstructures(n_phases=2, size=(n, n, n))
+    draw_microstructures(X_delta[:, center])
 
 
 .. image:: elasticity_3D_files/elasticity_3D_4_0.png
@@ -139,7 +119,7 @@ the ``make_elasticFEstrain_delta`` function.
     elastic_modulus = (80, 120)
     poissons_ratio = (0.3, 0.3)
     macro_strain = 0.02 
-    size = (L, L, L)
+    size = (n, n, n)
     
     t = tm.time.time()
     X_delta, strains_delta = make_elastic_FE_strain_delta(elastic_modulus=elastic_modulus,
@@ -149,7 +129,7 @@ the ``make_elasticFEstrain_delta`` function.
 
 .. parsed-literal::
 
-    Elapsed Time 70.2430000305 Seconds
+    Elapsed Time 173.42673707 Seconds
 
 
 Let's take a look at one of the delta microstructures and the
@@ -168,25 +148,25 @@ Calibrating First Order Influence Coefficients
 
 Now that we have the delta microstructures and their strain fields, we
 can calibrate the influence coefficients by creating an instance of a
-bases and the ``MKSRegressionModel`` class. Because we have 2 discrete
-phases we will create an instance of the ``DiscreteIndicatorBasis`` with
+bases and the ``MKSLocalizationModel`` class. Because we have 2 discrete
+phases we will create an instance of the ``PrimitiveBasis`` with
 ``n_states`` equal to 2, and then pass the basis in to create an
-instance of the ``MKSRegressionModel``. The delta microstructures and
+instance of the ``MKSLocalizationModel``. The delta microstructures and
 their strain fields are then passed to the ``fit`` method.
 
 .. code:: python
 
-    from pymks import MKSRegressionModel
-    from pymks.bases import DiscreteIndicatorBasis
+    from pymks import MKSLocalizationModel
+    from pymks.bases import PrimitiveBasis
     
-    basis = DiscreteIndicatorBasis(n_states=2)
-    MKSmodel = MKSRegressionModel(basis=basis)
+    prim_basis = PrimitiveBasis(n_states=2)
+    model = MKSLocalizationModel(basis=prim_basis)
 Now, pass the delta microstructures and their strain fields into the
 ``fit`` method to calibrate the first order influence coefficients.
 
 .. code:: python
 
-    MKSmodel.fit(X_delta, strains_delta)
+    model.fit(X_delta, strains_delta)
 That's it, the influence coefficient have be calibrated. Let's take a
 look at them.
 
@@ -194,15 +174,15 @@ look at them.
 
     from pymks.tools import draw_coeff
     
-    coeff = MKSmodel.coeff
+    coeff = model.coeff
     draw_coeff(coeff[center])
 
 
 .. image:: elasticity_3D_files/elasticity_3D_15_0.png
 
 
-The influence coefficients for :math:`h=0` have a Gaussian-like shape,
-while the influence coefficients for :math:`h=1` are constant-valued.
+The influence coefficients for :math:`l=0` have a Gaussian-like shape,
+while the influence coefficients for :math:`l=1` are constant-valued.
 The constant-valued influence coefficients may seem superfluous, but are
 equally as import. They are equivalent to the constant term in multiple
 linear regression with `categorical
@@ -211,7 +191,7 @@ variables <http://en.wikipedia.org/wiki/Dummy_variable_%28statistics%29>`__.
 Predict of the Strain Field for a Random Microstructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let's now use our instance of the ``MKSRegressionModel`` class with
+Let's now use our instance of the ``MKSLocalizationModel`` class with
 calibrated influence coefficients to compute the strain field for a
 random two phase microstructure and compare it with the results from a
 finite element simulation.
@@ -233,7 +213,7 @@ results from finite element analysis.
 
 .. parsed-literal::
 
-    Elapsed Time 32.0750000477 Seconds
+    Elapsed Time 73.3518118858 Seconds
 
 
 
@@ -244,18 +224,18 @@ results from finite element analysis.
 reproduce the simulation with the same boundary conditions that they
 were calibrated with**
 
-Now to get the strain field from the ``MKSRegressionModel`` just pass
+Now to get the strain field from the ``MKSLocalizationModel`` just pass
 the same microstructure to the ``predict`` method.
 
 .. code:: python
 
     t = tm.time.time()
-    strain_pred = MKSmodel.predict(X)
+    strain_pred = model.predict(X)
     print 'Elapsed Time',tm.time.time() - t,'Seconds'
 
 .. parsed-literal::
 
-    Elapsed Time 0.000999927520752 Seconds
+    Elapsed Time 0.00445413589478 Seconds
 
 
 Finally let's compare the results from finite element simulation and the
@@ -275,9 +255,9 @@ Let's look at the difference between the two plots.
 
 .. code:: python
 
-    from pymks.tools import draw_diff
+    from pymks.tools import draw_differences
     
-    draw_diff((strain[0, center] - strain_pred[0, center]), title='Finite Element - MKS')
+    draw_differences([strain[0, center] - strain_pred[0, center]], ['Finite Element - MKS'])
 
 
 .. image:: elasticity_3D_files/elasticity_3D_24_0.png
@@ -293,15 +273,15 @@ The influence coefficients that were calibrated on a smaller
 microstructure can be used to predict the strain field on a larger
 microstructure though spectral interpolation [3], but accuracy of the
 MKS model drops slightly. To demonstrate how this is done, let's
-generate a new larger :math:`N` by :math:`N` random microstructure and
+generate a new larger :math:`m` by :math:`m` random microstructure and
 its strain field.
 
 .. code:: python
 
-    N = 3 * L
-    center = (N - 1) / 2
+    m = 3 * n
+    center = (m - 1) / 2
     t = tm.time.time()
-    X = np.random.randint(2, size=(1, N, N, N))
+    X = np.random.randint(2, size=(1, m, m, m))
 The influence coefficients that have already been calibrated need to be
 resized to match the shape of the new larger microstructure that we want
 to compute the strain field for. This can be done by passing the shape
@@ -309,10 +289,10 @@ of the new larger microstructure into the 'resize\_coeff' method.
 
 .. code:: python
 
-    MKSmodel.resize_coeff(X[0].shape)
+    model.resize_coeff(X[0].shape)
 Because the coefficients have been resized, they will no longer work for
-our original :math:`L` by :math:`L` sized microstructures they were
-calibrated on, but they can now be used on the :math:`N` by :math:`N`
+our original :math:`n` by :math:`n` sized microstructures they were
+calibrated on, but they can now be used on the :math:`m` by :math:`m`
 microstructures. Just like before, just pass the microstructure as the
 argument of the ``predict`` method to get the strain field.
 
@@ -321,13 +301,13 @@ argument of the ``predict`` method to get the strain field.
     from pymks.tools import draw_strains
     
     t = tm.time.time()
-    strain_pred = MKSmodel.predict(X)
+    strain_pred = model.predict(X)
     print 'Elapsed Time',(tm.time.time() - t), 'Seconds'
-    draw_strains(strain_pred[0, center], title='xx')
+    draw_microstructure_strain(X[0, center], strain_pred[0, center])
 
 .. parsed-literal::
 
-    Elapsed Time 0.00500011444092 Seconds
+    Elapsed Time 0.0269329547882 Seconds
 
 
 

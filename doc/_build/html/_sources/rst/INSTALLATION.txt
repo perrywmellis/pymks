@@ -18,7 +18,7 @@ Scipy Stack
 
 The packages `Nosetests <https://nose.readthedocs.org/en/latest/>`__,
 `Scipy <http://www.scipy.org/>`__, `Numpy <http://www.scipy.org/>`__,
-`Scikit-learn <http://scikit-learn.org>`__ are all required.
+and `Scikit-learn <http://scikit-learn.org>`__ are all required.
 
 Examples
 --------
@@ -50,9 +50,58 @@ See the `SfePy installation
 instructions <http://sfepy.org/doc-devel/installation.html>`__ for more
 details.
 
+`PyFFTW <http://hgomersall.github.io/pyFFTW/>`__
+------------------------------------------------
+
+If installed, PyMKS will use
+`PyFFTW <http://hgomersall.github.io/pyFFTW/>`__ to computed FFTs
+instead of `Numpy <http://www.scipy.org/>`__. As long as
+`Numpy <http://www.scipy.org/>`__ is not using `Intel
+MKL <https://software.intel.com/en-us/articles/numpyscipy-with-intel-mkl>`__,
+`PyFFTW <http://hgomersall.github.io/pyFFTW/>`__ should improvement the
+performance of PyMKS.
+
+To install `PyFFTW <http://hgomersall.github.io/pyFFTW/>`__ use pip
+
+::
+
+    $ pip install pyfftw
+
+See the `PyFFTW installation
+instructions <https://github.com/hgomersall/pyFFTW#installation>`__ for
+more details.
+
+Installation on Windows
+-----------------------
+
+It is recommended to follow the installation instructions below using
+`Anaconda <https://store.continuum.io/cshop/anaconda/>`__.
+
+Alternatively, if you already have a Python environment installed, all
+of the required packages and their dependencies can be downloaded from
+`Christoph Gohlke Unofficial Windows
+installers <http://www.lfd.uci.edu/~gohlke/pythonlibs/#scikit-learn>`__.
+
+Installation with Anaconda
+--------------------------
+
+The `Anaconda Python
+Distributionn <https://store.continuum.io/cshop/anaconda/>`__ contains
+all of the required packages outside of `SfePy <http://sfepy.org>`__ and
+works on multiple platforms.
+`Download <http://continuum.io/downloads>`__ and
+`install <http://docs.continuum.io/anaconda/install.html>`__ Anaconda,
+and use the Anaconda Command Prompt to install PyMKS using pip.
+
 Requirements
 ------------
 
-The `REQUIREMENTS.md <REQUIREMENTS.html>`__ file has a complete list of
-packages in the Python environment during development. However, most of
-these are certainly not required for running PyMKS.
+The `REQUIREMENTS.md <REQUIREMENTS.html>`__ file has a list of required
+packages in a Python environment used to run tests and examples for the
+current release of PyMKS.
+
+Installation Issues
+===================
+
+Please send questions and issues about installation of PyMKS to the
+pymks-general@googlegroups.com list.

@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,8 +53,8 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="index.html"><img src="_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -63,7 +63,7 @@
                 <li><a href="rst/INSTALLATION.html">Installation</a></li>
                 <li><a href="EXAMPLES.html">Examples</a></li>
                 <li><a href="API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -76,7 +76,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rst/derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rst/derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rst/tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rst/CREDITS.html">Authors</a></li>
@@ -108,7 +109,9 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#C"><strong>C</strong></a>
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
@@ -117,9 +120,36 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  
 </div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="spatial_statistics.html#pymks.stats.autocorrelate">autocorrelate() (in module pymks.stats)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="MKSmodels.html#MKSHomogenizationModel.basis">basis (MKSHomogenizationModel attribute)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="MKSmodels.html#MKSLocalizationModel.basis">(MKSLocalizationModel attribute)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
@@ -128,17 +158,29 @@
   </dt>
 
       
-  <dt><a href="MKSmodels.html#MKSRegressionModel.coef">coef (MKSRegressionModel attribute)</a>
+  <dt><a href="MKSmodels.html#MKSLocalizationModel.coef">coef (MKSLocalizationModel attribute)</a>
+  </dt>
+
+      
+  <dt><a href="MKSmodels.html#pymks.mks_localization_model.MKSLocalizationModel.coeff">coeff (pymks.mks_localization_model.MKSLocalizationModel attribute)</a>
+  </dt>
+
+      
+  <dt><a href="bases.html#pymks.bases.ContinuousIndicatorBasis">ContinuousIndicatorBasis (in module pymks.bases)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="MKSmodels.html#pymks.mks_regression_model.MKSRegressionModel.coeff">coeff (pymks.mks_regression_model.MKSRegressionModel attribute)</a>
+  <dt><a href="spatial_statistics.html#pymks.stats.correlate">correlate() (in module pymks.stats)</a>
   </dt>
 
       
-  <dt><a href="bases.html#pymks.bases.ContinuousIndicatorBasis">ContinuousIndicatorBasis (class in pymks.bases)</a>
+  <dt><a href="MKSmodels.html#MKSHomogenizationModel.correlations">correlations (MKSHomogenizationModel attribute)</a>
+  </dt>
+
+      
+  <dt><a href="spatial_statistics.html#pymks.stats.crosscorrelate">crosscorrelate() (in module pymks.stats)</a>
   </dt>
 
   </dl></td>
@@ -148,25 +190,91 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="bases.html#pymks.bases.DiscreteIndicatorBasis">DiscreteIndicatorBasis (class in pymks.bases)</a>
+  <dt><a href="MKSmodels.html#MKSHomogenizationModel.degree">degree (MKSHomogenizationModel attribute)</a>
+  </dt>
+
+      
+  <dt><a href="MKSmodels.html#MKSHomogenizationModel.dimension_reducer">dimension_reducer (MKSHomogenizationModel attribute)</a>
+  </dt>
+
+      
+  <dt><a href="bases.html#pymks.bases.DiscreteIndicatorBasis">DiscreteIndicatorBasis (in module pymks.bases)</a>
+  </dt>
+
+      
+  <dt><a href="bases.html#pymks.bases.LegendreBasis.discretize">discretize() (pymks.bases.LegendreBasis method)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_autocorrelations">draw_autocorrelations() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_coeff">draw_coeff() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_component_variance">draw_component_variance() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_components">draw_components() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_concentrations">draw_concentrations() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_concentrations_compare">draw_concentrations_compare() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_correlations">draw_correlations() (in module pymks.tools)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="bases.html#pymks.bases.ContinuousIndicatorBasis.discretize">discretize() (pymks.bases.ContinuousIndicatorBasis method)</a>
+  <dt><a href="tools.html#pymks.tools.draw_crosscorrelations">draw_crosscorrelations() (in module pymks.tools)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="bases.html#pymks.bases.DiscreteIndicatorBasis.discretize">(pymks.bases.DiscreteIndicatorBasis method)</a>
+      
+  <dt><a href="tools.html#pymks.tools.draw_differences">draw_differences() (in module pymks.tools)</a>
   </dt>
 
-        
-  <dt><a href="bases.html#pymks.bases.LegendreBasis.discretize">(pymks.bases.LegendreBasis method)</a>
+      
+  <dt><a href="tools.html#pymks.tools.draw_goodness_of_fit">draw_goodness_of_fit() (in module pymks.tools)</a>
   </dt>
 
-      </dl></dd>
+      
+  <dt><a href="tools.html#pymks.tools.draw_gridscores">draw_gridscores() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_gridscores_matrix">draw_gridscores_matrix() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_learning_curves">draw_learning_curves() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_microstructure_strain">draw_microstructure_strain() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_microstructures">draw_microstructures() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_strains">draw_strains() (in module pymks.tools)</a>
+  </dt>
+
+      
+  <dt><a href="tools.html#pymks.tools.draw_strains_compare">draw_strains_compare() (in module pymks.tools)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -184,15 +292,15 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="MKSmodels.html#MKSRegressionModel.Fcoef">Fcoef (MKSRegressionModel attribute)</a>
+  <dt><a href="MKSmodels.html#pymks.mks_homogenization_model.MKSHomogenizationModel.fit">fit() (pymks.mks_homogenization_model.MKSHomogenizationModel method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="MKSmodels.html#pymks.mks_regression_model.MKSRegressionModel.fit">fit() (pymks.mks_regression_model.MKSRegressionModel method)</a>
+      <dd><dl>
+        
+  <dt><a href="MKSmodels.html#pymks.mks_localization_model.MKSLocalizationModel.fit">(pymks.mks_localization_model.MKSLocalizationModel method)</a>
   </dt>
 
+      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -214,6 +322,10 @@
   </dt>
 
       
+  <dt><a href="datageneration.html#pymks.datasets.make_checkerboard_microstructure">make_checkerboard_microstructure() (in module pymks.datasets)</a>
+  </dt>
+
+      
   <dt><a href="datageneration.html#pymks.datasets.make_delta_microstructures">make_delta_microstructures() (in module pymks.datasets)</a>
   </dt>
 
@@ -221,10 +333,14 @@
   <dt><a href="datageneration.html#pymks.datasets.make_elastic_FE_strain_delta">make_elastic_FE_strain_delta() (in module pymks.datasets)</a>
   </dt>
 
+      
+  <dt><a href="datageneration.html#pymks.datasets.make_elastic_FE_strain_random">make_elastic_FE_strain_random() (in module pymks.datasets)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="datageneration.html#pymks.datasets.make_elastic_FE_strain_random">make_elastic_FE_strain_random() (in module pymks.datasets)</a>
+  <dt><a href="datageneration.html#pymks.datasets.make_elastic_stress_random">make_elastic_stress_random() (in module pymks.datasets)</a>
   </dt>
 
       
@@ -232,7 +348,11 @@
   </dt>
 
       
-  <dt><a href="MKSmodels.html#pymks.mks_regression_model.MKSRegressionModel">MKSRegressionModel (class in pymks.mks_regression_model)</a>
+  <dt><a href="MKSmodels.html#pymks.mks_homogenization_model.MKSHomogenizationModel">MKSHomogenizationModel (class in pymks.mks_homogenization_model)</a>
+  </dt>
+
+      
+  <dt><a href="MKSmodels.html#pymks.mks_localization_model.MKSLocalizationModel">MKSLocalizationModel (class in pymks.mks_localization_model)</a>
   </dt>
 
   </dl></td>
@@ -242,7 +362,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="MKSmodels.html#MKSRegressionModel.n_states">n_states (MKSRegressionModel attribute)</a>
+  <dt><a href="MKSmodels.html#MKSHomogenizationModel.n_components">n_components (MKSHomogenizationModel attribute)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="MKSmodels.html#MKSLocalizationModel.n_states">n_states (MKSLocalizationModel attribute)</a>
   </dt>
 
   </dl></td>
@@ -252,17 +378,19 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="MKSmodels.html#pymks.mks_regression_model.MKSRegressionModel.predict">predict() (pymks.mks_regression_model.MKSRegressionModel method)</a>
+  <dt><a href="MKSmodels.html#pymks.mks_homogenization_model.MKSHomogenizationModel.predict">predict() (pymks.mks_homogenization_model.MKSHomogenizationModel method)</a>
   </dt>
 
-      
-  <dt><a href="bases.html#module-pymks.bases">pymks.bases (module)</a>
+      <dd><dl>
+        
+  <dt><a href="MKSmodels.html#pymks.mks_localization_model.MKSLocalizationModel.predict">(pymks.mks_localization_model.MKSLocalizationModel method)</a>
   </dt>
 
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="datageneration.html#module-pymks.datasets">pymks.datasets (module)</a>
+  <dt><a href="MKSmodels.html#MKSHomogenizationModel.property_linker">property_linker (MKSHomogenizationModel attribute)</a>
   </dt>
 
   </dl></td>
@@ -272,7 +400,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="MKSmodels.html#pymks.mks_regression_model.MKSRegressionModel.resize_coeff">resize_coeff() (pymks.mks_regression_model.MKSRegressionModel method)</a>
+  <dt><a href="MKSmodels.html#pymks.mks_localization_model.MKSLocalizationModel.resize_coeff">resize_coeff() (pymks.mks_localization_model.MKSLocalizationModel method)</a>
   </dt>
 
   </dl></td>
@@ -287,6 +415,26 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="MKSmodels.html#pymks.mks_homogenization_model.MKSHomogenizationModel.score">score() (pymks.mks_homogenization_model.MKSHomogenizationModel method)</a>
+  </dt>
+
+      
+  <dt><a href="MKSmodels.html#pymks.mks_homogenization_model.MKSHomogenizationModel.stats_fit">stats_fit() (pymks.mks_homogenization_model.MKSHomogenizationModel method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="MKSmodels.html#pymks.mks_homogenization_model.MKSHomogenizationModel.stats_predict">stats_predict() (pymks.mks_homogenization_model.MKSHomogenizationModel method)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 

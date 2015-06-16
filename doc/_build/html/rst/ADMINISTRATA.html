@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -52,8 +52,8 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,7 @@
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -75,7 +75,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -131,6 +132,15 @@ test coverage</li>
 <li>All documentation with <a class="reference external" href="http://google-styleguide.googlecode.com/svn/trunk/pyguide.html#Comments">Google Python doc
 styling</a>.</li>
 </ul>
+<p>Steps to install</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install sphinx
+$ pip install sphinx_bootstrap_theme
+$ pip install sphinxcontrib-napoleon
+$ cd doc/
+$ make
+</pre></div>
+</div>
+<p>The documentation should be in <tt class="docutils literal"><span class="pre">_build/html</span></tt>.</p>
 </div>
 <div class="section" id="branching">
 <h2>Branching<a class="headerlink" href="#branching" title="Permalink to this headline">¶</a></h2>

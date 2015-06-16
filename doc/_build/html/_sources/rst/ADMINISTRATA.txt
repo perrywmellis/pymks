@@ -31,6 +31,18 @@ Docs
 -  All documentation with `Google Python doc
    styling <http://google-styleguide.googlecode.com/svn/trunk/pyguide.html#Comments>`__.
 
+Steps to install
+
+::
+
+    $ pip install sphinx
+    $ pip install sphinx_bootstrap_theme
+    $ pip install sphinxcontrib-napoleon
+    $ cd doc/
+    $ make
+
+The documentation should be in ``_build/html``.
+
 Branching
 ---------
 

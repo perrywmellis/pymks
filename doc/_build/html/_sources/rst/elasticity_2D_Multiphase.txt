@@ -55,7 +55,7 @@ strain fields are all that we need to calibrate the first order
 influence coefficients [2].
 
 Here we use the ``make_delta_microstructure`` function from
-``pymks.datasets`` to create the two delta microstructures needed to
+``pymks.datasets`` to create the delta microstructures needed to
 calibrate the first order influence coefficients for a two phase
 microstructure. The ``make_delta_microstructure`` function uses SfePy to
 generate the data
@@ -70,16 +70,21 @@ generate the data
     import matplotlib.pyplot as plt
 .. code:: python
 
-    L = 21
+    n = 21
     n_phases = 3
     from pymks.tools import draw_microstructures
     from pymks.datasets import make_delta_microstructures
     
-    X_delta = make_delta_microstructures(n_phases=n_phases, size=(L, L))
-    draw_microstructures(X_delta[0], X_delta[1], X_delta[2], X_delta[3])
+    X_delta = make_delta_microstructures(n_phases=n_phases, size=(n, n))
+Let's take a look at a few of the delta microstructures by importing
+``draw_microstructures`` from ``pymks.tools``.
+
+.. code:: python
+
+    draw_microstructures(X_delta[::2])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_4_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_6_0.png
 
 
 Using delta microstructures for the calibration of the first order
@@ -119,7 +124,7 @@ number of phases.
     elastic_modulus = (80, 100, 120)
     poissons_ratio = (0.3, 0.3, 0.3)
     macro_strain = 0.02
-    size = (L, L)
+    size = (n, n)
     
     X_delta, strains_delta = make_elastic_FE_strain_delta(elastic_modulus=elastic_modulus,
                                                           poissons_ratio=poissons_ratio,
@@ -132,7 +137,7 @@ Let's take a look at one of the delta microstructures and the
     draw_microstructure_strain(X_delta[0], strains_delta[0])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_9_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_11_0.png
 
 
 Because ``slice(None)`` (the default slice operator in Python,
@@ -147,26 +152,26 @@ Calibrating First Order Influence Coefficients
 
 Now that we have the delta microstructures and their strain fields, we
 will calibrate the influence coefficients by creating an instance of the
-``MKSRegressionModel`` class. Because we are going to calibrate the
+``MKSLocalizatoinModel`` class. Because we are going to calibrate the
 influence coefficients with delta microstructures, we can create an
-instance of ``DiscreteIndicatorBasis`` with ``n_states`` equal to 3, and
-use it to create an instance of ``MKSRegressionModel``. The delta
+instance of ``PrimitiveBasis`` with ``n_states`` equal to 3, and use it
+to create an instance of ``MKSLocalizationModel``. The delta
 microstructures and their strain fields will then be passed to the
 ``fit`` method.
 
 .. code:: python
 
-    from pymks import MKSRegressionModel
-    from pymks import DiscreteIndicatorBasis
+    from pymks import MKSLocalizationModel
+    from pymks import PrimitiveBasis
     
-    basis = DiscreteIndicatorBasis(n_states=3, domain=[0, 2])
-    MKSmodel = MKSRegressionModel(basis=basis)
+    prim_basis =PrimitiveBasis(n_states=3, domain=[0, 2])
+    model = MKSLocalizationModel(basis=prim_basis)
 Now, pass the delta microstructures and their strain fields into the
 ``fit`` method to calibrate the first order influence coefficients.
 
 .. code:: python
 
-    MKSmodel.fit(X_delta, strains_delta)
+    model.fit(X_delta, strains_delta)
 That's it, the influence coefficient have be calibrated. Let's take a
 look at them.
 
@@ -174,14 +179,14 @@ look at them.
 
     from pymks.tools import draw_coeff
     
-    draw_coeff(MKSmodel.coeff)
+    draw_coeff(model.coeff)
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_16_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_18_0.png
 
 
-The influence coefficients for :math:`h=0` and :math:`h = 1` have a
-Gaussian-like shape, while the influence coefficients for :math:`h=2`
+The influence coefficients for :math:`l=0` and :math:`l = 1` have a
+Gaussian-like shape, while the influence coefficients for :math:`l=2`
 are constant-valued. The constant-valued influence coefficients may seem
 superfluous, but are equally as import. They are equivalent to the
 constant term in multiple linear regression with `categorical
@@ -190,7 +195,7 @@ variables <http://en.wikipedia.org/wiki/Dummy_variable_%28statistics%29>`__.
 Predict of the Strain Field for a Random Microstructure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let's now use our instance of the ``MKSRegressionModel`` class with
+Let's now use our instance of the ``MKSLocalizationModel`` class with
 calibrated influence coefficients to compute the strain field for a
 random two phase microstructure and compare it with the results from a
 finite element simulation.
@@ -210,19 +215,19 @@ results from finite element analysis.
     draw_microstructure_strain(X[0] , strain[0])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_19_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_21_0.png
 
 
 **Note that the calibrated influence coefficients can only be used to
 reproduce the simulation with the same boundary conditions that they
 were calibrated with**
 
-Now to get the strain field from the ``MKSRegressionModel`` just pass
+Now to get the strain field from the ``MKSLocalizationModel`` just pass
 the same microstructure to the ``predict`` method.
 
 .. code:: python
 
-    strain_pred = MKSmodel.predict(X)
+    strain_pred = model.predict(X)
 Finally let's compare the results from finite element simulation and the
 MKS model.
 
@@ -233,19 +238,19 @@ MKS model.
     draw_strains_compare(strain[0], strain_pred[0])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_23_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_25_0.png
 
 
 Let's plot the difference between the two strain fields.
 
 .. code:: python
 
-    from pymks.tools import draw_diff
+    from pymks.tools import draw_differences
     
-    draw_diff((strain[0] - strain_pred[0]), title='Finite Element - MKS')
+    draw_differences([strain[0] - strain_pred[0]], ['Finite Element - MKS'])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_25_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_27_0.png
 
 
 The MKS model is able to capture the strain field for the random
@@ -262,8 +267,8 @@ generate a new larger random microstructure and its strain field.
 
 .. code:: python
 
-    N = 3 * L 
-    size = (N, N)
+    m = 3 * n 
+    size = (m, m)
     print size
     
     X, strain = make_elastic_FE_strain_random(n_samples=1, elastic_modulus=elastic_modulus,
@@ -278,53 +283,53 @@ generate a new larger random microstructure and its strain field.
 
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_28_1.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_30_1.png
 
 
 The influence coefficients that have already been calibrated on a
-:math:`L` by :math:`L` delta microstructures, need to be resized to
-match the shape of the new larger :math:`N` by :math:`N` microstructure
+:math:`n` by :math:`n` delta microstructures, need to be resized to
+match the shape of the new larger :math:`m` by :math:`m` microstructure
 that we want to compute the strain field for. This can be done by
 passing the shape of the new larger microstructure into the
 'resize\_coeff' method.
 
 .. code:: python
 
-    MKSmodel.resize_coeff(X[0].shape)
+    model.resize_coeff(X[0].shape)
 Let's now take a look that ther resized influence coefficients.
 
 .. code:: python
 
-    draw_coeff(MKSmodel.coeff)
+    draw_coeff(model.coeff)
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_32_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_34_0.png
 
 
 Because the coefficients have been resized, they will no longer work for
-our original :math:`L` by :math:`L` sized microstructures they were
-calibrated on, but they can now be used on the :math:`N` by :math:`N`
+our original :math:`n` by :math:`n` sized microstructures they were
+calibrated on, but they can now be used on the :math:`m` by :math:`m`
 microstructures. Just like before, just pass the microstructure as the
 argument of the ``predict`` method to get the strain field.
 
 .. code:: python
 
-    strain_pred = MKSmodel.predict(X)
+    strain_pred = model.predict(X)
     
     draw_strains_compare(strain[0], strain_pred[0])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_34_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_36_0.png
 
 
 Again, let's plot the difference between the two strain fields.
 
 .. code:: python
 
-    draw_diff((strain[0] - strain_pred[0]), title='Finite Element - MKS')
+    draw_differences([strain[0] - strain_pred[0]], ['Finite Element - MKS'])
 
 
-.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_36_0.png
+.. image:: elasticity_2D_Multiphase_files/elasticity_2D_Multiphase_38_0.png
 
 
 As you can see, the results from the strain field computed with the

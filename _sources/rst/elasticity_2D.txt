@@ -36,11 +36,11 @@ fields. For an isotropic material the stiffness tensor can be
 represented by lower dimension terms which can relate the stress and the
 strain as follows.
 
-.. math::  \sigma_{ij} = \lambda \delta_{ij} \varepsilon_{kk} + 2\mu \varepsilon_{ij}  
+.. math::  \sigma_{ij} = \lambda \delta_{ij} \varepsilon{kk} + 2\mu \varepsilon_{ij}  
 
-:math:`\lambda` and :math:`\mu` are the first and second Lame parameters
-and can be defined in terms of the Young's modulus :math:`E` and
-Poisson's ratio :math:`\nu` in 2D.
+$ $ and :math:`\mu` are the first and second Lame parameters and can be
+defined in terms of the Young's modulus :math:`E` and Poisson's ratio
+:math:`\nu` in 2D.
 
 .. math::  \lambda = \frac{E\nu}{(1-\nu)(1-2\nu)} 
 
@@ -64,18 +64,38 @@ and can be cast in terms of displacement.
 .. math::  \mu u_{i,jj}+(\mu + \lambda)u_{j,ij}=0 
 
 In this example, a displacement controlled simulation is used to
-calculate the strain. The domain is a square box of side :math:`L` which
-has an macroscopic strain :math:`\bar{\varepsilon}_{xx}` imposed.
+calculated the strain and the following boundary conditions for square
+box of length :math:`L` and macroscopic strain
+:math:`\bar{\varepsilon}_{xx}` are imposed.
 
 In general, generateing the calibration data for the MKS requires
 boundary conditions that are both periodic and displaced, which are
-quite unusual boundary conditions and are given by,
+quite unusual boundary conditions. The ideal boundary conditions are
+given by,
 
 .. math::  u(L, y) = u(0, y) + L\bar{\varepsilon}_{xx}
 
 .. math::  u(0, L) = u(0, 0) = 0  
 
 .. math::  u(x, 0) = u(x, L) 
+
+Unfortunaltely, we can't implement these boundary conditions with
+`SfePy <http://sfepy.org>`__, the closest we can get is
+
+.. math::  u(L, y) = L\bar{\varepsilon}_{xx}
+
+.. math::  u(0, y) = 0 
+
+.. math::  u(0, L) = u(0, 0) = 0  
+
+.. math::  u(x, 0) = u(x, L) 
+
+This leads to some issues near the edges of the domain and introduces
+errors into the resizing of the coefficients. We are working to fix this
+issue, but note that the problem is not with the MKS regression itself,
+but with the calibration data used. The finite element package ABAQUS
+includes the displaced periodic boundary condition and can be used to
+calibrate the MKS regression correctly.
 
 Modeling with MKS
 -----------------
@@ -150,7 +170,7 @@ number of phases.
 
 .. code:: python
 
-    from pymks.datasets import make_elastic_FE_strain_delta
+    from pymks.datasets import make_elasticFEstrain_delta
     from pymks.tools import draw_microstructure_strain
     
     elastic_modulus = (100, 120)
@@ -158,20 +178,47 @@ number of phases.
     macro_strain = 0.02
     size = (L, L)
     
-    X_delta, y_delta = make_elastic_FE_strain_delta(elastic_modulus=elastic_modulus,
-                                                    poissons_ratio=poissons_ratio,
-                                                    size=size, macro_strain=macro_strain) 
+    X_delta, strains_delta = make_elasticFEstrain_delta(elastic_modulus=elastic_modulus,
+                                                        poissons_ratio=poissons_ratio,
+                                                        size=size, macro_strain=macro_strain,
+                                                        strain_index=slice(None))
 Let's take a look at one of the delta microstructures and the
 :math:`\varepsilon_{xx}` strain field.
 
 .. code:: python
 
-    draw_microstructure_strain(X_delta[0], y_delta[0])
+    draw_microstructure_strain(X_delta[0], strains_delta[0,...,0])
 
 
 .. image:: elasticity_2D_files/elasticity_2D_9_0.png
 
 
+Because ``slice(None)`` (the default slice operator in Python,
+equivalent to array[:]) was passed in to the
+``make_elasticFEstrain_delta`` function as the argument for
+``strain_index``, the function returns all the strain fields. Let's also
+take a look at the :math:`\varepsilon_{yy}` and :math:`\varepsilon_{xy}`
+strain fields.
+
+.. code:: python
+
+    from pymks.tools import draw_strains
+    draw_strains(strains_delta[0,...,1], strains_delta[0,...,2], title1='yy', title2='xy')    
+
+
+.. image:: elasticity_2D_files/elasticity_2D_11_0.png
+
+
+The default argument for ``strain_index`` is zero which makes
+``make_elasticFEstrain_delta`` only return the :math:`\varepsilon_{xx}`
+strain field. For the rest of this example we are only going to use the
+:math:`\varepsilon_{xx}` field to calibrate the influence coefficients,
+and the term strain field will refer to the :math:`\varepsilon_{xx}`
+field. The calibration can also be done on the other strains fields.
+
+.. code:: python
+
+    strains_delta = strains_delta[..., 0]
 Calibrating First Order Influence Coefficients
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -194,7 +241,7 @@ Now, pass the delta microstructures and their strain fields into the
 
 .. code:: python
 
-    MKSmodel.fit(X_delta, y_delta)
+    MKSmodel.fit(X_delta, strains_delta)
 That's it, the influence coefficient have be calibrated. Let's take a
 look at them.
 
@@ -205,7 +252,7 @@ look at them.
     draw_coeff(MKSmodel.coeff)
 
 
-.. image:: elasticity_2D_files/elasticity_2D_15_0.png
+.. image:: elasticity_2D_files/elasticity_2D_19_0.png
 
 
 The influence coefficients for :math:`h=0` have a Gaussian-like shape,
@@ -215,8 +262,8 @@ equally as import. They are equivalent to the constant term in multiple
 linear regression with `categorical
 variables <http://en.wikipedia.org/wiki/Dummy_variable_%28statistics%29>`__.
 
-Predict the Strain Field for a Random Microstructure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Predict of the Strain Field for a Random Microstructure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let's now use our instance of the ``MKSRegressionModel`` class with
 calibrated influence coefficients to compute the strain field for a
@@ -229,16 +276,16 @@ results from finite element analysis.
 
 .. code:: python
 
-    from pymks.datasets import make_elastic_FE_strain_random
+    from pymks.datasets import make_elasticFEstrain_random
     
     np.random.seed(99)
-    X, strain = make_elastic_FE_strain_random(n_samples=1, elastic_modulus=elastic_modulus,
-                                              poissons_ratio=poissons_ratio, size=size, 
-                                              macro_strain=macro_strain)
+    X, strain = make_elasticFEstrain_random(n_samples=1, elastic_modulus=elastic_modulus,
+                                       poissons_ratio=poissons_ratio, size=size, 
+                                       macro_strain=macro_strain)
     a = draw_microstructure_strain(X[0] , strain[0])
 
 
-.. image:: elasticity_2D_files/elasticity_2D_18_0.png
+.. image:: elasticity_2D_files/elasticity_2D_22_0.png
 
 
 **Note that the calibrated influence coefficients can only be used to
@@ -261,19 +308,7 @@ MKS model.
     draw_strains_compare(strain[0], strain_pred[0])
 
 
-.. image:: elasticity_2D_files/elasticity_2D_22_0.png
-
-
-Lastly, let's look at the difference between the two strain fields.
-
-.. code:: python
-
-    from pymks.tools import draw_diff
-    
-    draw_diff((strain[0] - strain_pred[0]), title='Finite Element - MKS')
-
-
-.. image:: elasticity_2D_files/elasticity_2D_24_0.png
+.. image:: elasticity_2D_files/elasticity_2D_26_0.png
 
 
 The MKS model is able to capture the strain field for the random
@@ -294,9 +329,9 @@ generate a new larger random microstructure and its strain field.
     size = (N, N)
     print size
     
-    X, strain = make_elastic_FE_strain_random(n_samples=1, elastic_modulus=elastic_modulus,
-                                              poissons_ratio=poissons_ratio, size=size, 
-                                              macro_strain=macro_strain)
+    X, strain = make_elasticFEstrain_random(n_samples=1, elastic_modulus=elastic_modulus,
+                                       poissons_ratio=poissons_ratio, size=size, 
+                                       macro_strain=macro_strain)
     
     draw_microstructure_strain(X[0] , strain[0])
 
@@ -306,7 +341,7 @@ generate a new larger random microstructure and its strain field.
 
 
 
-.. image:: elasticity_2D_files/elasticity_2D_27_1.png
+.. image:: elasticity_2D_files/elasticity_2D_29_1.png
 
 
 The influence coefficients that have already been calibrated need to be
@@ -324,7 +359,7 @@ Let's now take a look that ther resized influence coefficients.
     draw_coeff(MKSmodel.coeff)
 
 
-.. image:: elasticity_2D_files/elasticity_2D_31_0.png
+.. image:: elasticity_2D_files/elasticity_2D_33_0.png
 
 
 Because the coefficients have been resized, they will no longer work for
@@ -338,16 +373,6 @@ argument of the ``predict`` method to get the strain field.
     strain_pred = MKSmodel.predict(X)
     
     draw_strains_compare(strain[0], strain_pred[0])
-
-
-.. image:: elasticity_2D_files/elasticity_2D_33_0.png
-
-
-Again, let's look at the difference between the two strain fields.
-
-.. code:: python
-
-    draw_diff((strain[0] - strain_pred[0]), title='Finite Element - MKS')
 
 
 .. image:: elasticity_2D_files/elasticity_2D_35_0.png

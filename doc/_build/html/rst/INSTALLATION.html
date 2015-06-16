@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -52,8 +52,8 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,7 @@
                 <li><a href="#">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -75,7 +75,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -117,7 +118,7 @@
 <h2>Scipy Stack<a class="headerlink" href="#scipy-stack" title="Permalink to this headline">¶</a></h2>
 <p>The packages <a class="reference external" href="https://nose.readthedocs.org/en/latest/">Nosetests</a>,
 <a class="reference external" href="http://www.scipy.org/">Scipy</a>, <a class="reference external" href="http://www.scipy.org/">Numpy</a>,
-<a class="reference external" href="http://scikit-learn.org">Scikit-learn</a> are all required.</p>
+and <a class="reference external" href="http://scikit-learn.org">Scikit-learn</a> are all required.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
@@ -142,12 +143,53 @@ $ python setup.py install
 instructions</a> for more
 details.</p>
 </div>
+<div class="section" id="pyfftw">
+<h2><a class="reference external" href="http://hgomersall.github.io/pyFFTW/">PyFFTW</a><a class="headerlink" href="#pyfftw" title="Permalink to this headline">¶</a></h2>
+<p>If installed, PyMKS will use
+<a class="reference external" href="http://hgomersall.github.io/pyFFTW/">PyFFTW</a> to computed FFTs
+instead of <a class="reference external" href="http://www.scipy.org/">Numpy</a>. As long as
+<a class="reference external" href="http://www.scipy.org/">Numpy</a> is not using <a class="reference external" href="https://software.intel.com/en-us/articles/numpyscipy-with-intel-mkl">Intel
+MKL</a>,
+<a class="reference external" href="http://hgomersall.github.io/pyFFTW/">PyFFTW</a> should improvement the
+performance of PyMKS.</p>
+<p>To install <a class="reference external" href="http://hgomersall.github.io/pyFFTW/">PyFFTW</a> use pip</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install pyfftw
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://github.com/hgomersall/pyFFTW#installation">PyFFTW installation
+instructions</a> for
+more details.</p>
+</div>
+<div class="section" id="installation-on-windows">
+<h2>Installation on Windows<a class="headerlink" href="#installation-on-windows" title="Permalink to this headline">¶</a></h2>
+<p>It is recommended to follow the installation instructions below using
+<a class="reference external" href="https://store.continuum.io/cshop/anaconda/">Anaconda</a>.</p>
+<p>Alternatively, if you already have a Python environment installed, all
+of the required packages and their dependencies can be downloaded from
+<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#scikit-learn">Christoph Gohlke Unofficial Windows
+installers</a>.</p>
+</div>
+<div class="section" id="installation-with-anaconda">
+<h2>Installation with Anaconda<a class="headerlink" href="#installation-with-anaconda" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://store.continuum.io/cshop/anaconda/">Anaconda Python
+Distributionn</a> contains
+all of the required packages outside of <a class="reference external" href="http://sfepy.org">SfePy</a> and
+works on multiple platforms.
+<a class="reference external" href="http://continuum.io/downloads">Download</a> and
+<a class="reference external" href="http://docs.continuum.io/anaconda/install.html">install</a> Anaconda,
+and use the Anaconda Command Prompt to install PyMKS using pip.</p>
+</div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference external" href="REQUIREMENTS.html">REQUIREMENTS.md</a> file has a complete list of
-packages in the Python environment during development. However, most of
-these are certainly not required for running PyMKS.</p>
+<p>The <a class="reference external" href="REQUIREMENTS.html">REQUIREMENTS.md</a> file has a list of required
+packages in a Python environment used to run tests and examples for the
+current release of PyMKS.</p>
 </div>
+</div>
+<div class="section" id="installation-issues">
+<h1>Installation Issues<a class="headerlink" href="#installation-issues" title="Permalink to this headline">¶</a></h1>
+<p>Please send questions and issues about installation of PyMKS to the
+<a class="reference external" href="mailto:pymks-general&#37;&#52;&#48;googlegroups&#46;com">pymks-general<span>&#64;</span>googlegroups<span>&#46;</span>com</a> list.</p>
 </div>
 
 

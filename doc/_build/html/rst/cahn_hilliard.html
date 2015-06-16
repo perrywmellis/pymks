@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -52,8 +52,8 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,7 @@
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -75,7 +75,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -135,6 +136,20 @@ import matplotlib.pyplot as plt
 </div>
 <div class="section" id="modeling-with-mks">
 <h3>Modeling with MKS<a class="headerlink" href="#modeling-with-mks" title="Permalink to this headline">¶</a></h3>
+<p>In this example the MKS equation will be used to predict microstructure
+at the next time step using</p>
+<div class="math">
+\[p[s, 1] = \sum_{r=0}^{S-1} \alpha[l, r, 1] \sum_{l=0}^{L-1} m[l, s - r, 0] + ...\]</div>
+<p>where <span class="math">\(p[s, n + 1]\)</span> is the concentration field at location
+<span class="math">\(s\)</span> and at time <span class="math">\(n + 1\)</span>, <span class="math">\(r\)</span> is the convolution dummy
+variable and <span class="math">\(l\)</span> indicates the local states varable.
+<span class="math">\(\alpha[l, r, n]\)</span> are the influence coefficients and
+<span class="math">\(m[l, r, 0]\)</span> the microstructure function given to the model.
+<span class="math">\(S\)</span> is the total discretized volume and <span class="math">\(L\)</span> is the total
+number of local states <tt class="docutils literal"><span class="pre">n_states</span></tt> choosen to use.</p>
+<p>The model will march forward in time by recussively replacing
+discretizing <span class="math">\(p[s, n]\)</span> and substituing it back for
+<span class="math">\(m[l, s - r, n]\)</span>.</p>
 </div>
 </div>
 <div class="section" id="calibration-datasets">
@@ -156,11 +171,11 @@ time step using <tt class="docutils literal"><span class="pre">dt</span></tt>.</
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pymks</span>
 <span class="kn">from</span> <span class="nn">pymks.datasets</span> <span class="kn">import</span> <span class="n">make_cahn_hilliard</span>
 
-<span class="n">L</span> <span class="o">=</span> <span class="mi">41</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">41</span>
 <span class="n">n_samples</span> <span class="o">=</span> <span class="mi">400</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="mf">1e-2</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">99</span><span class="p">)</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_cahn_hilliard</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_cahn_hilliard</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The function <tt class="docutils literal"><span class="pre">make_cahnHilliard</span></tt> generates <tt class="docutils literal"><span class="pre">n_samples</span></tt> number of
@@ -169,7 +184,7 @@ microstructures, <tt class="docutils literal"><span class="pre">y</span></tt>, a
 plots one of these microstructures along with its update.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_concentrations</span>
 
-<span class="n">draw_concentrations</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">title0</span><span class="o">=</span><span class="s">&#39;time=0&#39;</span><span class="p">,</span> <span class="n">title1</span><span class="o">=</span><span class="s">&#39;time = 1&#39;</span><span class="p">)</span>
+<span class="n">draw_concentrations</span><span class="p">((</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Input Concentration&#39;</span><span class="p">,</span> <span class="s">&#39;Output Concentration&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_6_0.png" src="../_images/cahn_hilliard_6_0.png" />
@@ -206,14 +221,10 @@ then predict the evolution of the concentration fields. Mean square
 error will be used to compared the results with the testing dataset to
 evaluate how the MKS model&#8217;s performance changes as we change the number
 of local states.</p>
-<p>First we need to import the class <tt class="docutils literal"><span class="pre">MKSRegressionModel</span></tt> from <tt class="docutils literal"><span class="pre">pymks</span></tt>.
-We will also use metrics from <tt class="docutils literal"><span class="pre">sklearn</span></tt> to calculate the mean squared
-error.</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
-<span class="n">mse</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">mean_squared_error</span>
-
-<span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">MKSRegressionModel</span>
-<span class="kn">from</span> <span class="nn">pymks.bases</span> <span class="kn">import</span> <span class="n">ContinuousIndicatorBasis</span>
+<p>First we need to import the class <tt class="docutils literal"><span class="pre">MKSLocalizationModel</span></tt> from
+<tt class="docutils literal"><span class="pre">pymks</span></tt>.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">MKSLocalizationModel</span>
+<span class="kn">from</span> <span class="nn">pymks.bases</span> <span class="kn">import</span> <span class="n">PrimitiveBasis</span>
 </pre></div>
 </div>
 <p>Next we will calibrate the influence coefficients while varying the
@@ -225,34 +236,34 @@ overfit the data.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.grid_search</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
 
 <span class="n">parameters_to_tune</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_states&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">)}</span>
-<span class="n">basis</span> <span class="o">=</span> <span class="n">ContinuousIndicatorBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">MKSRegressionModel</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
-<span class="n">scoring</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">make_scorer</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="o">-</span><span class="n">mse</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
-<span class="n">gs</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters_to_tune</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="n">scoring</span><span class="p">,</span> <span class="n">fit_params</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">)})</span>
+<span class="n">prim_basis</span> <span class="o">=</span> <span class="n">PrimitiveBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MKSLocalizationModel</span><span class="p">(</span><span class="n">prim_basis</span><span class="p">)</span>
+<span class="n">gs</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">parameters_to_tune</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fit_params</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)})</span>
 <span class="n">gs</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre>GridSearchCV(cv=5,
-       estimator=MKSRegressionModel(basis=&lt;pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae3801a590&gt;,
-          n_states=2),
+       estimator=MKSLocalizationModel(basis=&lt;pymks.bases.primitive.PrimitiveBasis object at 0x7efc84c1e2d0&gt;,
+           n_states=2),
        fit_params={&#39;size&#39;: (41, 41)}, iid=True, loss_func=None, n_jobs=1,
        param_grid={&#39;n_states&#39;: array([ 2,  3,  4,  5,  6,  7,  8,  9, 10])},
-       pre_dispatch=&#39;2*n_jobs&#39;, refit=True, score_func=None,
-       scoring=make_scorer(&lt;lambda&gt;), verbose=0)
+       pre_dispatch=&#39;2*n_jobs&#39;, refit=True, score_func=None, scoring=None,
+       verbose=0)
 </pre></div>
 </div>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">best_estimator_</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>MKSRegressionModel(basis=&lt;pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae38174b50&gt;,
-          n_states=10)
+<div class="highlight-python"><div class="highlight"><pre>MKSLocalizationModel(basis=&lt;pymks.bases.primitive.PrimitiveBasis object at 0x7efc57d58a90&gt;,
+           n_states=10)
 0.99999908222
 </pre></div>
 </div>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_gridscores</span>
 
-<span class="n">draw_gridscores</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span><span class="p">)</span>
+<span class="n">draw_gridscores</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span><span class="p">,</span> <span class="s">&#39;n_states&#39;</span><span class="p">,</span>
+                <span class="n">score_label</span><span class="o">=</span><span class="s">&#39;R-squared&#39;</span><span class="p">,</span> <span class="n">param_label</span><span class="o">=</span><span class="s">&#39;L-Number of Local States&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_14_0.png" src="../_images/cahn_hilliard_14_0.png" />
@@ -262,14 +273,14 @@ n_states gets larger than signal digits.</p>
 <p>In order to save on computation costs let&#8217;s set calibrate the influence
 coefficients with <tt class="docutils literal"><span class="pre">n_states</span></tt> equal to 6, but realize that if we need
 slightly more accuracy the value can be increased.</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="n">MKSmodel</span> <span class="o">=</span> <span class="n">MKSRegressionModel</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="n">ContinuousIndicatorBasis</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
-<span class="n">MKSmodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">model</span> <span class="o">=</span> <span class="n">MKSLocalizationModel</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="n">PrimitiveBasis</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here are the first 4 influence coefficients.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_coeff</span>
 
-<span class="n">draw_coeff</span><span class="p">(</span><span class="n">MKSmodel</span><span class="o">.</span><span class="n">coeff</span><span class="p">[</span><span class="o">...</span><span class="p">,:</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">draw_coeff</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">coeff</span><span class="p">[</span><span class="o">...</span><span class="p">,:</span><span class="mi">4</span><span class="p">])</span>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_18_0.png" src="../_images/cahn_hilliard_18_0.png" />
@@ -285,9 +296,9 @@ Cahn-Hilliard simulation we need an instance of the class
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.datasets.cahn_hilliard_simulation</span> <span class="kn">import</span> <span class="n">CahnHilliardSimulation</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">191</span><span class="p">)</span>
 
-<span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span>
-<span class="n">CHSim</span> <span class="o">=</span> <span class="n">CahnHilliardSimulation</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-<span class="n">phi</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+<span class="n">ch_sim</span> <span class="o">=</span> <span class="n">CahnHilliardSimulation</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">phi_sim</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">phi_pred</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -296,15 +307,15 @@ into the Cahn-Hilliard simulation and the MKS model.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="n">time_steps</span> <span class="o">=</span> <span class="mi">10</span>
 
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">time_steps</span><span class="p">):</span>
-    <span class="n">CHSim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">CHSim</span><span class="o">.</span><span class="n">response</span>
-    <span class="n">phi_pred</span> <span class="o">=</span> <span class="n">MKSmodel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">phi_pred</span><span class="p">)</span>
+    <span class="n">ch_sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">phi_sim</span><span class="p">)</span>
+    <span class="n">phi_sim</span> <span class="o">=</span> <span class="n">ch_sim</span><span class="o">.</span><span class="n">response</span>
+    <span class="n">phi_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">phi_pred</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Let&#8217;s take a look at the concentration fields.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_concentrations_compare</span>
 
-<span class="n">draw_concentrations_compare</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phi_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">draw_concentrations</span><span class="p">((</span><span class="n">phi_sim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phi_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Simulation&#39;</span><span class="p">,</span> <span class="s">&#39;MKS&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_24_0.png" src="../_images/cahn_hilliard_24_0.png" />
@@ -314,11 +325,11 @@ local states.</p>
 <h3>Resizing the Coefficients to use on Larger Systems<a class="headerlink" href="#resizing-the-coefficients-to-use-on-larger-systems" title="Permalink to this headline">¶</a></h3>
 <p>Now let&#8217;s try and predict a larger simulation by resizing the
 coefficients and provide a larger initial concentratio field.</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="n">N</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">L</span>
-<span class="n">MKSmodel</span><span class="o">.</span><span class="n">resize_coeff</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">m</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n</span>
+<span class="n">model</span><span class="o">.</span><span class="n">resize_coeff</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
 
-<span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
-<span class="n">phi</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">phi0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+<span class="n">phi_sim</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">phi_pred</span> <span class="o">=</span> <span class="n">phi0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -326,15 +337,15 @@ coefficients and provide a larger initial concentratio field.</p>
 concentration fields back into the Cahn-Hilliard simulation and the MKS
 model.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="n">CHSim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">CHSim</span><span class="o">.</span><span class="n">response</span>
-    <span class="n">phi_pred</span> <span class="o">=</span> <span class="n">MKSmodel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">phi_pred</span><span class="p">)</span>
+    <span class="n">ch_sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">phi_sim</span><span class="p">)</span>
+    <span class="n">phi_sim</span> <span class="o">=</span> <span class="n">ch_sim</span><span class="o">.</span><span class="n">response</span>
+    <span class="n">phi_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">phi_pred</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Let&#8217;s take a look at the results.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_concentrations_compare</span>
 
-<span class="n">draw_concentrations_compare</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phi_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">draw_concentrations_compare</span><span class="p">((</span><span class="n">phi_sim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">phi_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">labels</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Simulation&#39;</span><span class="p">,</span> <span class="s">&#39;MKS&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_30_0.png" src="../_images/cahn_hilliard_30_0.png" />

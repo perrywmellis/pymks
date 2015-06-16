@@ -1,15 +1,15 @@
 
-Cahn-Hilliard with Legendre Basis
-=================================
+Cahn-Hilliard with Primtive and Legendre Bases
+==============================================
 
 This example uses a Cahn-Hilliard model to compare two different bases
 representations to discretize the microstructure. One basis
-representaion uses the continuous indicator basis (also known as a
-primitive or binned basis) and the other uses Legendre polynomials. The
-example includes the background theory about using Legendre polynomials
-as a basis in MKS. The MKS with two different bases are compared with
-the standard spectral solution for the Cahn-Hilliard solution at both
-the calibration domain size and a scaled domain size.
+representaion uses the primitive (or hat) basis and the other uses
+Legendre polynomials. The example includes the background theory about
+using Legendre polynomials as a basis in MKS. The MKS with two different
+bases are compared with the standard spectral solution for the
+Cahn-Hilliard solution at both the calibration domain size and a scaled
+domain size.
 
 Cahn-Hilliard Equation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -26,94 +26,15 @@ spectral scheme with periodic boundary conditions, see `Chang and
 Rutenberg <http://dx.doi.org/10.1103/PhysRevE.72.055701>`__ for more
 details.
 
-Legendre Polynomial Basis for the Microstructure Function
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Continuous Indicator Basis
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Recall the previous `Cahn-Hilliard
-example <http://pymks.org/rst/cahn_hilliard_Legendre.html>`__, the
-convolution at time :math:`t` is given by
-
-.. math::  p\left[i, t \right] = \sum_{h=0}^{n-1} \alpha_h \left[j\right] m_h\left[i - j, t\right] 
-
-In this example the :math:`p` are an approximation of the updated
-:math:`\phi` such that,
-
-.. math::  p \left[i, t\right] \approx \phi \left[i, t + \Delta t \right] 
-
-The ``ContinuousIndicatorBasis`` uses a simple primitive or binned basis
-to discretize state space such that
-
-.. math::  \phi\left[i\right] = \sum_{h=0}^{n-1} m_h\left[i\right] \chi_h 
-
-dropping the superscript. In this example, :math:`-1 \le \phi \le 1` so
-that :math:`\Delta h = 2 / (n - 1)` where :math:`n\ge2` is the number of
-spatial bins.
-
-The :math:`\chi_h` are given by :math:`-1 + h \Delta h`. The :math:`m_h`
-can be represented by
-
-.. math::  m_h \left[i\right] = R\left(1 - \frac{\left| \phi\left[i\right] - \chi_h \right|}{\Delta h}\right) 
-
-where :math:`R` is the `ramp
-function <http://en.wikipedia.org/wiki/Ramp_function>`__. There is a
-mapping both ways between :math:`\phi` and :math:`m_h`. See `Fast el
-al. <http://dx.doi.org/10.1016/j.actamat.2010.10.008>`__ for further
-details on solving the Cahn-Hilliard equation with this basis.
-
-Legendre Polynomial Basis
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The microstructure function can also be represented using the
-coefficients from a Legendre series, such that,
-
-.. math::  m_h\left[i\right] = c_h \left[i\right] 
-
-where the :math:`c_h` are the coefficients in a Legendre series. As we
-shall see, the coefficients turn out to be Legendre polynomials
-themselves. The :math:`m_h` vector only needs to be a unique mapping
-from a value :math:`\phi` so it is arbitrary in terms of how this is
-achieved. The following steps show how to construct the :math:`c_h`.
-Start with a Legendre series,
-
-.. math::  f \left( \eta, \phi \right) = \sum_{l = 0}^\infty c_{l} \left(\phi\right) P_l (\eta) 
-
-where :math:`\eta` is a continuous variable such
-:math:`-1 \le \eta \le 1` and :math:`\phi` is a fixed value at a
-location in discretized space (the :math:`[i]` is dropped for
-convenience). Using
-
-.. math::  \int_{-1}^{1} P_l \left( \eta \right)  P_h \left( \eta \right) d\xi = \delta_{lh}\frac{2}{2h + 1} 
-
-and the expression for :math:`f` above, we can write the :math:`c_l` as
-
-.. math::  c_h \left(\phi\right) = \frac{2h +1}{2} \int_{-1}^1 P_h \left(\eta \right) f\left( \eta, \phi \right) d\eta 
-
-Now we choose :math:`f` such that
-
-.. math::  f \left(\eta, \phi\right) = \delta\left(\phi - \eta \right) 
-
-where we are conveniently assuming that :math:`\phi` has the same range
-has :math:`\xi` (a linear mapping would be needed if this wasn't the
-case). This choice of a :math:`\delta` function is good in two ways, it
-allows the integral to be easily evaluated and it also provides a unique
-mapping between :math:`\phi` and :math:`m_h`. Using this choice, the
-:math:`m_h` can be written as
-
-.. math::  m_h \left[i\right] = c_h \left[i\right] = \frac{2h +1}{2} P_h \left(\phi\left[i\right]\right) 
-
-For completeness, we can trivially construct a reverse mapping by
-observing that :math:`P_1 \left( x \right) = x` so that
-:math:`\phi = 2 m_1 / 3`.
-
-Further description is required to show mathematically why the
-:math:`P_n` make such a good basis.
+Basis Functions for the Microstructure Function and Influence Function
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this example, we will explore the differences when using the Legendre
-polynomials as the basis function compared to the primitive (binned)
-basis for the microstructure function.
+polynomials as the basis function compared to the primitive (or hat)
+basis for the microstructure function and the influence coefficients.
+
+For more information about both of these basis please see the `theory
+section <THEORY.html>`__.
 
 .. code:: python
 
@@ -147,11 +68,11 @@ domain given by ``size``.
     import pymks
     from pymks.datasets import make_cahn_hilliard
     
-    L = 41
+    length = 41
     n_samples = 400
     dt = 1e-2
     np.random.seed(101)
-    size=(L, L)
+    size=(length, length)
     X, y = make_cahn_hilliard(n_samples=n_samples, size=size, dt=dt)
 The function ``make_cahnHilliard`` has generated ``n_samples`` number of
 random microstructures, ``X``, and returned the same microstructures
@@ -162,7 +83,7 @@ look at one of them.
 
     from pymks.tools import draw_concentrations
     
-    draw_concentrations(X[0], y[0], title0='time = 0', title1='time = 1')
+    draw_concentrations((X[0], y[0]),('Calibration Input', 'Calibration Output'))
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_7_0.png
@@ -171,35 +92,36 @@ look at one of them.
 Calibrate Influence Coefficients
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In this example, we compare the difference between using the "primitive
-basis" and the Legendre polynomial basis to represent the microstructure
-function. As mentioned above, the microstructures (concentration fields)
-are not discrete phases. This leaves the number of local states in local
-state space ``n_states`` as a free hyper parameter. In the next section
-we look to see what a practical number of bins and Legendre polynomials
-would be.
+In this example, we compare the difference between using the primitive
+(or hat) basis and the Legendre polynomial basis to represent the
+microstructure function. As mentioned above, the microstructures
+(concentration fields) are not discrete phases. This leaves the number
+of local states in local state space ``n_states`` as a free hyper
+parameter. In the next section we look to see what a practical number of
+local states for bases would be.
 
 Optimizing the Number of Local States
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Below, we compare the difference in performance as we vary the local
-state when we choose the binned basis and the Legendre polynomial basis.
+state when we choose the primitive basis and the Legendre polynomial
+basis.
 
 The ``(X, y)`` sample data is split into training and test data. The
 code then optimizes ``n_states`` between ``2`` and ``11`` and the two
 ``basis`` with the ``parameters_to_tune`` variable. The ``GridSearchCV``
-takes an ``MKSRegressionModel`` instance, a ``scoring`` function (figure
-of merit) and the ``parameters_to_tune`` and then finds the optimal
-parameters with a grid search.
+takes an ``MKSLocalizationModel`` instance, a ``scoring`` function
+(figure of merit) and the ``parameters_to_tune`` and then finds the
+optimal parameters with a grid search.
 
 .. code:: python
 
-    from pymks.bases import ContinuousIndicatorBasis
+    from pymks.bases import PrimitiveBasis
     from sklearn.grid_search import GridSearchCV
     from sklearn import metrics
     mse = metrics.mean_squared_error
     from pymks.bases import LegendreBasis
-    from pymks import MKSRegressionModel
+    from pymks import MKSLocalizationModel
     from sklearn.cross_validation import train_test_split
     
     train_split_shape = (X.shape[0],) + (np.prod(X.shape[1:]),)
@@ -208,17 +130,17 @@ parameters with a grid search.
                                                         y.reshape(train_split_shape),
                                                         test_size=0.5, random_state=3)
     
-    continuous_basis = ContinuousIndicatorBasis(2, [-1, 1])
-    legendre_basis = LegendreBasis(2, [-1, 1])
+    prim_basis = PrimitiveBasis(2, [-1, 1])
+    leg_basis = LegendreBasis(2, [-1, 1])
     
     params_to_tune = {'n_states': np.arange(2, 11),
-                     'basis': [continuous_basis, legendre_basis]}
-    model = MKSRegressionModel(continuous_basis)
+                     'basis': [prim_basis, leg_basis]}
+    Model = MKSLocalizationModel(prim_basis)
     scoring = metrics.make_scorer(lambda a, b: -mse(a, b))
     fit_params = {'size': size}
-    gs = GridSearchCV(model, params_to_tune, cv=5, scoring=scoring, fit_params=fit_params).fit(X_train, y_train)
-The optimal parameters are a Legendre polynomial basis with only 4
-terms. More terms don't improve the mean square error.
+    gs = GridSearchCV(Model, params_to_tune, cv=5, fit_params=fit_params, n_jobs=3).fit(X_train, y_train)
+The optimal parameters are the ``LegendreBasis`` with only 4 local
+states. More terms don't improve the R-squared value.
 
 .. code:: python
 
@@ -227,8 +149,8 @@ terms. More terms don't improve the mean square error.
 
 .. parsed-literal::
 
-    MKSRegressionModel(basis=<pymks.bases.legendre.LegendreBasis object at 0x7f6a19bd5110>,
-              n_states=4)
+    MKSLocalizationModel(basis=<pymks.bases.legendre.LegendreBasis object at 0x7fa6f49e4210>,
+               n_states=4)
     1.0
 
 
@@ -237,55 +159,53 @@ terms. More terms don't improve the mean square error.
     from pymks.tools import draw_gridscores
     
     lgs = [x for x in gs.grid_scores_ \
-           if type(x.parameters['basis']) is type(legendre_basis)]
+           if type(x.parameters['basis']) is type(leg_basis)]
     cgs = [x for x in gs.grid_scores_ \
-           if type(x.parameters['basis']) is type(continuous_basis)]
+           if type(x.parameters['basis']) is type(prim_basis)]
     
-    draw_gridscores(lgs, 'Legendre', '#f46d43')
-    draw_gridscores(cgs, 'Continuous', '#1a9641')
-    legend = plt.legend()
+    draw_gridscores([lgs, cgs], 'n_states', data_labels=['Legendre', 'Primitve'],
+                    colors=['#f46d43', '#1a9641'], score_label='R-Squared', 
+                    param_label = 'L - Total Number of Local States')
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_12_0.png
 
 
-As you can see the ``Legendre`` basis converges faster than the binned
-basis. In order to further compare performance between the two models,
-lets select 4 local states for both bases.
+As you can see the ``LegendreBasis`` converges faster than the
+``PrimitiveBasis``. In order to further compare performance between the
+two models, lets select 4 local states for both bases.
 
 Comparing the Bases for ``n_states=4``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
-    from pymks import MKSRegressionModel
+    prim_basis = PrimitiveBasis(n_states=4, domain=[-1, 1])
+    prim_model = MKSLocalizationModel(basis=prim_basis)
+    prim_model.fit(X, y)
     
-    BinBasis = ContinuousIndicatorBasis(n_states=4, domain=[-1, 1])
-    BinModel = MKSRegressionModel(basis=BinBasis)
-    BinModel.fit(X, y)
-    
-    LegendreBasis = LegendreBasis(4, [-1, 1])
-    LegendreModel = MKSRegressionModel(basis=LegendreBasis)
-    LegendreModel.fit(X, y)
+    leg_basis = LegendreBasis(4, [-1, 1])
+    leg_model = MKSLocalizationModel(basis=leg_basis)
+    leg_model.fit(X, y)
 Now let's look at the influence coefficients for both bases.
 
-First the binned basis influence coefficients
+First the ``PrimitiveBasis`` influence coefficients
 
 .. code:: python
 
     from pymks.tools import draw_coeff
     
-    draw_coeff(BinModel.coeff)
+    draw_coeff(prim_model.coeff)
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_17_0.png
 
 
-Now for the Legendre polynomial basis influence coefficients.
+Now for the ``LegendreBasis`` influence coefficients.
 
 .. code:: python
 
-    draw_coeff(LegendreModel.coeff)
+    draw_coeff(leg_model.coeff)
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_19_0.png
@@ -308,35 +228,46 @@ the Cahn-Hilliard simulation we need an instance of the class
     from pymks.datasets.cahn_hilliard_simulation import CahnHilliardSimulation
     np.random.seed(66)
     
-    phi0 = np.random.normal(0, 1e-9, ((n_samples,) + size))
-    CHSim = CahnHilliardSimulation(dt=dt)
-    phi = phi0.copy()
-    phi_bin_pred = phi0.copy()
-    phi_legendre_pred = phi0.copy()
+    phi0 = np.random.normal(0, 1e-9, ((1,) + size))
+    ch_sim = CahnHilliardSimulation(dt=dt)
+    phi_sim = phi0.copy()
+    phi_prim = phi0.copy()
+    phi_legendre = phi0.copy()
     
+
+Let's look at the inital concentration field.
+
+.. code:: python
+
+    draw_concentrations([phi0[0]], ['Initial Concentration'])
+
+
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_24_0.png
+
 
 In order to move forward in time, we need to feed the concentration back
 into the Cahn-Hilliard simulation and the MKS models.
 
 .. code:: python
 
-    time_steps = 55
+    time_steps = 50
     
-    for ii in range(time_steps):
-        CHSim.run(phi)
-        phi = CHSim.response
-        phi_bin_pred = BinModel.predict(phi_bin_pred)
-        phi_legendre_pred = LegendreModel.predict(phi_legendre_pred)
+    for steps in range(time_steps):
+        ch_sim.run(phi_sim)
+        phi_sim = ch_sim.response
+        phi_prim = prim_model.predict(phi_prim)
+        phi_legendre = leg_model.predict(phi_legendre)
 Let's take a look at the concentration fields.
 
 .. code:: python
 
     from pymks.tools import draw_concentrations
     
-    draw_concentrations(phi[0], phi_bin_pred[0], phi_legendre_pred[0], title0='Simulation', title1='Bin', title2='Legendre')
+    draw_concentrations((phi_sim[0], phi_prim[0], phi_legendre[0]),
+                        ('Simulation', 'Primative', 'Legendre'))
 
 
-.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_26_0.png
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_28_0.png
 
 
 By just looking at the three microstructures is it difficult to see any
@@ -347,24 +278,26 @@ and the simulation.
 
     from sklearn import metrics
     mse = metrics.mean_squared_error
-    from pymks.tools import draw_diff
+    from pymks.tools import draw_differences
     
-    draw_diff((phi[0] - phi_bin_pred[0]), (phi[0] - phi_legendre_pred[0]), title0='Simulaiton - Bin', title1='Simulation - Legendre')
-    print 'Bin mse =',mse(phi[0], phi_bin_pred[0])
-    print 'Legendre mse =',mse(phi[0], phi_legendre_pred[0])
+    draw_differences([(phi_sim[0] - phi_prim[0]), (phi_sim[0] - phi_legendre[0])],
+                     ['Simulaiton - Prmitive', 'Simulation - Legendre'])
+    
+    print 'Primative mse =', mse(phi_sim[0], phi_prim[0])
+    print 'Legendre mse =', mse(phi_sim[0], phi_legendre[0])
+
+
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_30_0.png
+
 
 .. parsed-literal::
 
-    Bin mse = 5.80547312672e-23
-    Legendre mse = 5.21327839227e-28
+    Primative mse = 5.28702717916e-23
+    Legendre mse = 4.35706317904e-28
 
 
-
-.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_28_1.png
-
-
-The Legendre polynomial basis clearly out performs the binned basis for
-the same value of ``n_states``.
+The ``LegendreBasis`` basis clearly out performs the ``PrimitiveBasis``
+for the same value of ``n_states``.
 
 Resizing the Coefficients to use on Larger Systems
 --------------------------------------------------
@@ -373,35 +306,46 @@ Below we compare the bases after the coefficients are resized.
 
 .. code:: python
 
-    N = 3 * L
-    BinModel.resize_coeff((N, N))
-    LegendreModel.resize_coeff((N, N))
+    big_length = 3 * length
+    big_size = (big_length, big_length)
+    prim_model.resize_coeff(big_size)
+    leg_model.resize_coeff(big_size)
     
-    phi0 = np.random.normal(0, 1e-9, (1, N, N))
-    phi = phi0.copy()
-    phi_bin_pred = phi0.copy()
-    phi_legendre_pred = phi0.copy()
+    phi0 = np.random.normal(0, 1e-9, (1,) + big_size)
+    phi_sim = phi0.copy()
+    phi_prim = phi0.copy()
+    phi_legendre = phi0.copy()
 
-Let's look at the resized coefficients.
-
-First the influence coefficients from the binned bases.
+Let's take a look at the initial large concentration field.
 
 .. code:: python
 
-    draw_coeff(BinModel.coeff)
-
-
-.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_33_0.png
-
-
-Now the influence coefficients from the Legendre polynomial bases.
-
-.. code:: python
-
-    draw_coeff(LegendreModel.coeff)
+    draw_concentrations([phi0[0]], ['Initial Concentration'])
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_35_0.png
+
+
+Let's look at the resized coefficients.
+
+First the influence coefficients from the ``PrimitiveBasis``.
+
+.. code:: python
+
+    draw_coeff(prim_model.coeff)
+
+
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_37_0.png
+
+
+Now the influence coefficients from the ``LegendreBases``.
+
+.. code:: python
+
+    draw_coeff(leg_model.coeff)
+
+
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_39_0.png
 
 
 Once again we are going to march forward in time by feeding the
@@ -410,17 +354,17 @@ models.
 
 .. code:: python
 
-    for ii in range(1000):
-        CHSim.run(phi)
-        phi = CHSim.response
-        phi_bin_pred = BinModel.predict(phi_bin_pred)
-        phi_legendre_pred = LegendreModel.predict(phi_legendre_pred)
+    for steps in range(time_steps):
+        ch_sim.run(phi_sim)
+        phi_sim = ch_sim.response
+        phi_prim = prim_model.predict(phi_prim)
+        phi_legendre = leg_model.predict(phi_legendre)
 .. code:: python
 
-    draw_concentrations(phi[0], phi_bin_pred[0], phi_legendre_pred[0], title0='Simulation', title1='Bin', title2='Legendre')
+    draw_concentrations((phi_sim[0], phi_prim[0], phi_legendre[0]), ('Simulation', 'Primiative', 'Legendre'))
 
 
-.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_38_0.png
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_42_0.png
 
 
 Both the MKS models seem to predict the concentration faily well.
@@ -429,25 +373,25 @@ look at the difference between the simulation and the MKS models.
 
 .. code:: python
 
-    from pymks.tools import draw_diff
+    draw_differences([(phi_sim[0] - phi_prim[0]), (phi_sim[0] - phi_legendre[0])], 
+                     ['Simulaiton - Primiative','Simulation - Legendre'])
     
-    draw_diff((phi[0] - phi_bin_pred[0]), (phi[0] - phi_legendre_pred[0]), 
-               title0='Simulaiton - Bin', title1='Simulation - Legendre')
-    print 'Bin mse =',mse(phi[0], phi_bin_pred[0])
-    print 'Legendre mse =',mse(phi[0], phi_legendre_pred[0])
+    print 'Primative mse =', mse(phi_sim[0], phi_prim[0])
+    print 'Legendre mse =', mse(phi_sim[0], phi_legendre[0])
+
+
+.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_44_0.png
+
 
 .. parsed-literal::
 
-    Bin mse = 5.40824187588e-19
-    Legendre mse = 5.11343260074e-25
+    Primative mse = 4.43202082745e-23
+    Legendre mse = 4.45272856882e-28
 
 
+With the resized influence coefficients, the ``LegendreBasis``
+outperforms the ``PrimitiveBasis`` for the same value of ``n_states``.
+The value of ``n_states`` does not necessarily guarantee a fair
+comparison between the two basis in terms of floating point calculations
+and memory used.
 
-.. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_40_1.png
-
-
-With the resized influence coefficients, the Legendre polynomial
-outperforms the binned basis for the same value of ``n_states``. The
-value of ``n_states`` does not necessarily guarantee a fair comparison
-between the two basis in terms of floating point calculations and memory
-used.

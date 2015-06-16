@@ -6,11 +6,10 @@ Introduction
 ------------
 
 This example provides a demonstration of using PyMKS to compute the
-linear strain field for a two phase composite material in 3D, and
-presents a comparison of the computational efficiency of MKS when
-compared with the finite element method. The example first provides
-information on the boundary conditions used in MKS. Next, delta
-microstructures are used to calibrate the first order influence
+linear strain field for a two phase composite material, and presents the
+computation efficiency of MKS over finite element methods. The example
+first provides information on the boundary conditions used in MKS. Next,
+delta microstructures are used to calibrate the first order influence
 coefficients. The influence coefficients are then used to compute the
 strain field for a random microstructure. Lastly, the calibrated
 influence coefficients are scaled up and are used to compute the strain
@@ -133,7 +132,7 @@ the ``make_elasticFEstrain_delta`` function.
 
 .. code:: python
 
-    from pymks.datasets import make_elastic_FE_strain_delta
+    from pymks.datasets import make_elasticFEstrain_delta
     from pymks.tools import draw_microstructure_strain
     
     elastic_modulus = (80, 120)
@@ -142,14 +141,14 @@ the ``make_elasticFEstrain_delta`` function.
     size = (L, L, L)
     
     t = tm.time.time()
-    X_delta, strains_delta = make_elastic_FE_strain_delta(elastic_modulus=elastic_modulus,
-                                                          poissons_ratio=poissons_ratio,
-                                                          size=size, macro_strain=macro_strain)
+    X_delta, strains_delta = make_elasticFEstrain_delta(elastic_modulus=elastic_modulus,
+                                                        poissons_ratio=poissons_ratio,
+                                                        size=size, macro_strain=macro_strain)
     print 'Elapsed Time',tm.time.time() - t, 'Seconds'
 
 .. parsed-literal::
 
-    Elapsed Time 70.2430000305 Seconds
+    Elapsed Time 51.7413358688 Seconds
 
 
 Let's take a look at one of the delta microstructures and the
@@ -222,18 +221,18 @@ results from finite element analysis.
 
 .. code:: python
 
-    from pymks.datasets import make_elastic_FE_strain_random
+    from pymks.datasets import make_elasticFEstrain_random
     
     np.random.seed(99)
     t = tm.time.time()
-    X, strain = make_elastic_FE_strain_random(n_samples=1, elastic_modulus=elastic_modulus,
-                                              poissons_ratio=poissons_ratio, size=size, macro_strain=macro_strain)
+    X, strain = make_elasticFEstrain_random(n_samples=1, elastic_modulus=elastic_modulus,
+                                       poissons_ratio=poissons_ratio, size=size, macro_strain=macro_strain)
     print 'Elapsed Time',(tm.time.time() - t), 'Seconds'
     draw_microstructure_strain(X[0, center] , strain[0, center])
 
 .. parsed-literal::
 
-    Elapsed Time 32.0750000477 Seconds
+    Elapsed Time 26.5504748821 Seconds
 
 
 
@@ -255,7 +254,7 @@ the same microstructure to the ``predict`` method.
 
 .. parsed-literal::
 
-    Elapsed Time 0.000999927520752 Seconds
+    Elapsed Time 0.000949144363403 Seconds
 
 
 Finally let's compare the results from finite element simulation and the
@@ -269,18 +268,6 @@ MKS model.
 
 
 .. image:: elasticity_3D_files/elasticity_3D_22_0.png
-
-
-Let's look at the difference between the two plots.
-
-.. code:: python
-
-    from pymks.tools import draw_diff
-    
-    draw_diff((strain[0, center] - strain_pred[0, center]), title='Finite Element - MKS')
-
-
-.. image:: elasticity_3D_files/elasticity_3D_24_0.png
 
 
 The MKS model is able to capture the strain field for the random
@@ -327,12 +314,20 @@ argument of the ``predict`` method to get the strain field.
 
 .. parsed-literal::
 
-    Elapsed Time 0.00500011444092 Seconds
+    Elapsed Time 0.0109941959381 Seconds
 
 
 
-.. image:: elasticity_3D_files/elasticity_3D_31_1.png
+.. image:: elasticity_3D_files/elasticity_3D_29_1.png
 
+
+As you can see, the results from the strain field computed with the
+resized influence coefficients is still close to the finite element for
+the larger microstructure. There is a slight decrease in accuracy due to
+spectral interpolation [4], but the trade off in accuracy is well worth
+the time savings compared to finite element analysis. Therefore a
+calibrated MKS model can be used to rapidly explore the space of
+potential microstructures to optimize material performance.
 
 References
 ----------

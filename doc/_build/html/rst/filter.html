@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -52,8 +52,8 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,7 @@
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/openmaterials/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -75,7 +75,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -108,7 +109,7 @@
 <p>This example demonstrates the connection between MKS and signal
 processing for a 1D filter. It shows that the filter is in fact the same
 as the influence coefficients and, thus, applying the <tt class="docutils literal"><span class="pre">predict</span></tt> method
-provided by the <tt class="docutils literal"><span class="pre">MKSRegressionModel</span></tt> is in essence just applying a
+provided by the <tt class="docutils literal"><span class="pre">MKSLocalizationnModel</span></tt> is in essence just applying a
 filter.</p>
 <div class="code python highlight-python"><div class="highlight"><pre>%matplotlib inline
 %load_ext autoreload
@@ -133,34 +134,34 @@ just <span class="math">\(F\)</span>.</p>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">F</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;#1a9850&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/filter_3_0.png" src="../_images/filter_3_0.png" />
 <p>Next we generate the sample data <tt class="docutils literal"><span class="pre">(X,</span> <span class="pre">y)</span></tt> using
 <tt class="docutils literal"><span class="pre">scipy.ndimage.convolve</span></tt>. This performs the convolution</p>
 <div class="math">
-\[p\left[ i \right] = F\left[j\right] X\left[i - j\right]\]</div>
+\[p\left[ s \right] = \sum_r F\left[r\right] X\left[r - s\right]\]</div>
 <p>for each sample.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scipy.ndimage</span>
 
-<span class="n">Nspace</span> <span class="o">=</span> <span class="mi">101</span>
-<span class="n">Nsample</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">n_space</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="n">n_sample</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">201</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">Nspace</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">Nsample</span><span class="p">,</span> <span class="n">Nspace</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n_space</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">n_sample</span><span class="p">,</span> <span class="n">n_space</span><span class="p">))</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;wrap&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">xx</span> <span class="ow">in</span> <span class="n">X</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>For this problem, a basis is unnecessary as no discretization is
-required in order to reproduce the convolution with the MKS. Using the
-<tt class="docutils literal"><span class="pre">ContinuousIndicatorBasis</span></tt> with <tt class="docutils literal"><span class="pre">n_states=2</span></tt> is the equivalent of a
-non-discretized convolution in space.</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">MKSRegressionModel</span>
-<span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">ContinuousIndicatorBasis</span>
+required in order to reproduce the convolution with the MKS
+localization. Using the <tt class="docutils literal"><span class="pre">ContinuousIndicatorBasis</span></tt> with <tt class="docutils literal"><span class="pre">n_states=2</span></tt>
+is the equivalent of a non-discretized convolution in space.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">MKSLocalizationModel</span>
+<span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">PrimitiveBasis</span>
 
-<span class="n">basis</span> <span class="o">=</span> <span class="n">ContinuousIndicatorBasis</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">MKSRegressionModel</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>
+<span class="n">prim_basis</span> <span class="o">=</span> <span class="n">PrimitiveBasis</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MKSLocalizationModel</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="n">prim_basis</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Fit the model using the data generated by <span class="math">\(F\)</span>.</p>
@@ -175,13 +176,14 @@ with the original for a few values</p>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre>[-0.41059557  0.20004566  0.61200171  0.5878077 ]
-[-0.41059557  0.20004566  0.61200171  0.5878077 ]
+[-0.41059556  0.20004566  0.6120017   0.58780769]
 </pre></div>
 </div>
 <p>With a slight linear manipulation of the coefficients, they agree
 perfectly with the shape of the filter, <span class="math">\(F\)</span>.</p>
-<div class="code python highlight-python"><div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$F$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">coeff</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">coeff</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$\alpha$&#39;</span><span class="p">)</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$F$&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;#1a9850&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">model</span><span class="o">.</span><span class="n">coeff</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">model</span><span class="o">.</span><span class="n">coeff</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+         <span class="s">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">r&#39;$\alpha$&#39;</span><span class="p">)</span>
 <span class="n">l</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -189,27 +191,28 @@ perfectly with the shape of the filter, <span class="math">\(F\)</span>.</p>
 <p>Some manipulation of the coefficients is required to reproduce the
 filter. Remember the convolution for the MKS is</p>
 <div class="math">
-\[p \left[i\right] = \sum_h^{n-1} \alpha_h \left[j\right] m_h \left[i - j\right]\]</div>
-<p>However, the <tt class="docutils literal"><span class="pre">MKSRegressionModel</span></tt> solves a modified form of this.
-There are always redundant coefficients since</p>
+\[p \left[s\right] = \sum_{l=0}^{L-1} \sum_{r=0}^{S - 1} \alpha[l, r] m[l, s - r]\]</div>
+<p>However, when the primitive basis is selected, the
+<tt class="docutils literal"><span class="pre">MKSLocalizationModel</span></tt> solves a modified form of this. There are
+always redundant coefficients since</p>
 <div class="math">
-\[\sum\limits_{h=0}^{n-1} m_h \left[i\right] = 1\]</div>
-<p>Thus, the convolution must be rewritten taking this into account. We can
-rewrite the convolution as</p>
+\[\sum\limits_{l=0}^{L-1} m[l, s] = 1\]</div>
+<p>Thus, the regression in Fourier space must be done with categorical
+variables, and the regression takes the following form.</p>
 <div class="math">
 \[\begin{split} \begin{split}
-p \left[i\right] &amp;= \sum\limits_{h=0}^n \alpha_h \left[j\right] m_h \left[i - j\right] \\
-        &amp;= \sum\limits_{h=0}^{n - 2}  \alpha_h \left[j\right] m_h \left[i - j\right] +
-           \alpha_{n-1} \left[j\right] \left( I\left[i - j\right] - \sum\limits_{h=0}^{n - 2} m_h \left[i - j\right] \right) \\
-        &amp;=  \alpha_{n - 1} \left[ j \right]  I\left[i - j\right] +
-           \sum\limits_{h=0}^{n - 2} \left(\alpha_h\left[j\right] - \alpha_{n-1}\left[j\right] \right) m_h\left[i - j\right] \\
-        &amp;= \beta + \sum\limits_{h=0}^{n - 2} b_h \left[ j \right] m_h \left[ i - j \right]
+p [s] &amp; = \sum_{l=0}^{L - 1} \sum_{r=0}^{S - 1} \alpha[l, r] m[l, s -r] \\
+P [k] &amp; = \sum_{l=0}^{L - 1} \beta[l, k] M[l, k] \\
+&amp;= \beta[0, k] M[0, k] + \beta[1, k] M[1, k]
 \end{split}\end{split}\]</div>
-<p>where
-<span class="math">\(\beta = \alpha_{n - 1} \left[ j \right]  I\left[i - j\right]\)</span> is
-just a constant and <span class="math">\(I\left[i\right] = 1\)</span> for all <span class="math">\(i\)</span>. This
-removes the redundancies from the regression. Manipulation of the
-<span class="math">\(\beta\)</span> and <span class="math">\(b_0\)</span> demonstrate that the filter is reproduced.</p>
+<p>where</p>
+<div class="math">
+\[\begin{split}\beta[0, k] = \begin{cases}
+\langle F(x) \rangle ,&amp; \text{if } k = 0\\
+0,              &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p>This removes the redundancies from the regression, and we can reproduce
+the filter.</p>
 </div>
 
 

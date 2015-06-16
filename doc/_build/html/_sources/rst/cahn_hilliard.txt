@@ -37,6 +37,23 @@ details.
 Modeling with MKS
 -----------------
 
+In this example the MKS equation will be used to predict microstructure
+at the next time step using
+
+.. math:: p[s, 1] = \sum_{r=0}^{S-1} \alpha[l, r, 1] \sum_{l=0}^{L-1} m[l, s - r, 0] + ...
+
+where :math:`p[s, n + 1]` is the concentration field at location
+:math:`s` and at time :math:`n + 1`, :math:`r` is the convolution dummy
+variable and :math:`l` indicates the local states varable.
+:math:`\alpha[l, r, n]` are the influence coefficients and
+:math:`m[l, r, 0]` the microstructure function given to the model.
+:math:`S` is the total discretized volume and :math:`L` is the total
+number of local states ``n_states`` choosen to use.
+
+The model will march forward in time by recussively replacing
+discretizing :math:`p[s, n]` and substituing it back for
+:math:`m[l, s - r, n]`.
+
 Calibration Datasets
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -61,11 +78,11 @@ time step using ``dt``.
     import pymks
     from pymks.datasets import make_cahn_hilliard
     
-    L = 41
+    n = 41
     n_samples = 400
     dt = 1e-2
     np.random.seed(99)
-    X, y = make_cahn_hilliard(n_samples=n_samples, size=(L, L), dt=dt)
+    X, y = make_cahn_hilliard(n_samples=n_samples, size=(n, n), dt=dt)
 
 The function ``make_cahnHilliard`` generates ``n_samples`` number of
 random microstructures, ``X``, and the associated updated
@@ -76,7 +93,7 @@ plots one of these microstructures along with its update.
 
     from pymks.tools import draw_concentrations
     
-    draw_concentrations(X[0], y[0], title0='time=0', title1='time = 1')
+    draw_concentrations((X[0], y[0]), labels=('Input Concentration', 'Output Concentration'))
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_6_0.png
@@ -121,17 +138,13 @@ error will be used to compared the results with the testing dataset to
 evaluate how the MKS model's performance changes as we change the number
 of local states.
 
-First we need to import the class ``MKSRegressionModel`` from ``pymks``.
-We will also use metrics from ``sklearn`` to calculate the mean squared
-error.
+First we need to import the class ``MKSLocalizationModel`` from
+``pymks``.
 
 .. code:: python
 
-    from sklearn import metrics
-    mse = metrics.mean_squared_error
-    
-    from pymks import MKSRegressionModel
-    from pymks.bases import ContinuousIndicatorBasis
+    from pymks import MKSLocalizationModel
+    from pymks.bases import PrimitiveBasis
 Next we will calibrate the influence coefficients while varying the
 number of local states and compute the mean squared error. The following
 demonstrates how to use Scikit-learn's ``GridSearchCV`` to optimize
@@ -144,10 +157,9 @@ overfit the data.
     from sklearn.grid_search import GridSearchCV
     
     parameters_to_tune = {'n_states': np.arange(2, 11)}
-    basis = ContinuousIndicatorBasis(2, [-1, 1])
-    model = MKSRegressionModel(basis)
-    scoring = metrics.make_scorer(lambda a, b: -mse(a, b))
-    gs = GridSearchCV(model, parameters_to_tune, cv=5, scoring=scoring, fit_params={'size': (L, L)})
+    prim_basis = PrimitiveBasis(2, [-1, 1])
+    model = MKSLocalizationModel(prim_basis)
+    gs = GridSearchCV(model, parameters_to_tune, cv=5, fit_params={'size': (n, n)})
     gs.fit(X_train, y_train)
 
 
@@ -155,12 +167,12 @@ overfit the data.
 .. parsed-literal::
 
     GridSearchCV(cv=5,
-           estimator=MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae3801a590>,
-              n_states=2),
+           estimator=MKSLocalizationModel(basis=<pymks.bases.primitive.PrimitiveBasis object at 0x7efc84c1e2d0>,
+               n_states=2),
            fit_params={'size': (41, 41)}, iid=True, loss_func=None, n_jobs=1,
            param_grid={'n_states': array([ 2,  3,  4,  5,  6,  7,  8,  9, 10])},
-           pre_dispatch='2*n_jobs', refit=True, score_func=None,
-           scoring=make_scorer(<lambda>), verbose=0)
+           pre_dispatch='2*n_jobs', refit=True, score_func=None, scoring=None,
+           verbose=0)
 
 
 
@@ -171,8 +183,8 @@ overfit the data.
 
 .. parsed-literal::
 
-    MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae38174b50>,
-              n_states=10)
+    MKSLocalizationModel(basis=<pymks.bases.primitive.PrimitiveBasis object at 0x7efc57d58a90>,
+               n_states=10)
     0.99999908222
 
 
@@ -180,7 +192,8 @@ overfit the data.
 
     from pymks.tools import draw_gridscores
     
-    draw_gridscores(gs.grid_scores_)
+    draw_gridscores(gs.grid_scores_, 'n_states',
+                    score_label='R-squared', param_label='L-Number of Local States')
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_14_0.png
@@ -196,15 +209,15 @@ slightly more accuracy the value can be increased.
 
 .. code:: python
 
-    MKSmodel = MKSRegressionModel(basis=ContinuousIndicatorBasis(6, [-1, 1]))
-    MKSmodel.fit(X, y)
+    model = MKSLocalizationModel(basis=PrimitiveBasis(6, [-1, 1]))
+    model.fit(X, y)
 Here are the first 4 influence coefficients.
 
 .. code:: python
 
     from pymks.tools import draw_coeff
     
-    draw_coeff(MKSmodel.coeff[...,:4])
+    draw_coeff(model.coeff[...,:4])
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_18_0.png
@@ -225,9 +238,9 @@ Cahn-Hilliard simulation we need an instance of the class
     from pymks.datasets.cahn_hilliard_simulation import CahnHilliardSimulation
     np.random.seed(191)
     
-    phi0 = np.random.normal(0, 1e-9, (1, L, L))
-    CHSim = CahnHilliardSimulation(dt=dt)
-    phi = phi0.copy()
+    phi0 = np.random.normal(0, 1e-9, (1, n, n))
+    ch_sim = CahnHilliardSimulation(dt=dt)
+    phi_sim = phi0.copy()
     phi_pred = phi0.copy()
     
 
@@ -239,16 +252,16 @@ into the Cahn-Hilliard simulation and the MKS model.
     time_steps = 10
     
     for ii in range(time_steps):
-        CHSim.run(phi)
-        phi = CHSim.response
-        phi_pred = MKSmodel.predict(phi_pred)
+        ch_sim.run(phi_sim)
+        phi_sim = ch_sim.response
+        phi_pred = model.predict(phi_pred)
 Let's take a look at the concentration fields.
 
 .. code:: python
 
     from pymks.tools import draw_concentrations_compare
     
-    draw_concentrations_compare(phi[0], phi_pred[0])
+    draw_concentrations((phi_sim[0], phi_pred[0]), labels=('Simulation', 'MKS'))
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_24_0.png
@@ -265,11 +278,11 @@ coefficients and provide a larger initial concentratio field.
 
 .. code:: python
 
-    N = 3 * L
-    MKSmodel.resize_coeff((N, N))
+    m = 3 * n
+    model.resize_coeff((m, m))
     
-    phi0 = np.random.normal(0, 1e-9, (1, N, N))
-    phi = phi0.copy()
+    phi0 = np.random.normal(0, 1e-9, (1, m, m))
+    phi_sim = phi0.copy()
     phi_pred = phi0.copy()
 Once again we are going to march forward in time by feeding the
 concentration fields back into the Cahn-Hilliard simulation and the MKS
@@ -278,16 +291,16 @@ model.
 .. code:: python
 
     for ii in range(1000):
-        CHSim.run(phi)
-        phi = CHSim.response
-        phi_pred = MKSmodel.predict(phi_pred)
+        ch_sim.run(phi_sim)
+        phi_sim = ch_sim.response
+        phi_pred = model.predict(phi_pred)
 Let's take a look at the results.
 
 .. code:: python
 
     from pymks.tools import draw_concentrations_compare
     
-    draw_concentrations_compare(phi[0], phi_pred[0])
+    draw_concentrations_compare((phi_sim[0], phi_pred[0]), labels=('Simulation', 'MKS'))
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_30_0.png

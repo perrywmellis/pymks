@@ -1,30 +1,50 @@
 
-Cahn-Hilliard Example
-=====================
+Cahn-Hilliard
+=============
 
-This example demonstrates how to use PyMKS to solve the Cahn-Hilliard
-equation. The first section provides some background information about
-the Cahn-Hilliard equation as well as details about calibrating and
-validating the MKS model. The example demonstrates how to generate
-sample data, calibrate the influence coefficients and then pick an
-appropriate number of local states when state space is continuous. The
-MKS model and a spectral solution of the Cahn-Hilliard equation are
-compared on a larger test microstructure over multiple time steps.
+This example demonstrates how to use PyMKS to quickly produce phase
+field results from a Cahn-Hilliard simulation. The first section
+provides some background information about the Cahn-Hilliard equation as
+well as details behind the Cahn-Hilliard simulation used to calibration
+and validate the MKS model. The example then goes on to demonstrate how
+to generate calibration data to calibrate the influence coefficients
+using linear regression. As part of the calibration process, the example
+explains how to pick an appropriate number of local states for the MKS
+model when state space is continuous. The Cahn-Hilliard simulation and
+the MKS model with calibrated influence coefficients are then used to
+predict the microstructure evolution from a given initial concentration
+and the results are compared. Finally, the influence coefficients are
+scaled up and used to predict the evolution for a much larger system.
 
 Cahn-Hilliard Equation
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The Cahn-Hilliard equation is used to simulate microstructure evolution
-during spinodial decomposition and has the following form,
+The Cahn-Hilliard equation is used to simulation microstructure
+evolution during spinodial decompation. The equation take the following
+form.
 
-.. math::  \dot{\phi} = \nabla^2 \left( \phi^3 - \phi \right) - \gamma \nabla^4 \phi 
+.. math::  \frac{\partial \phi}{\partial t} = \nabla \cdot D \nabla \Bigg ( \frac{\partial f}{\partial \phi} + \epsilon^2 \nabla^2 \phi \Bigg )
 
-where :math:`\phi` is a conserved ordered parameter and
-:math:`\sqrt{\gamma}` represents the width of the interface. In this
-example, the Cahn-Hilliard equation is solved using a semi-implicit
-spectral scheme with periodic boundary conditions, see `Chang and
-Rutenberg <http://dx.doi.org/10.1103/PhysRevE.72.055701>`__ for more
-details.
+:math:`\phi` is an conserved ordered parameter which can represent alloy
+composition, :math:`D` is the diffusion coefficient,
+:math:`f(\phi(x,t))` is the free energy function, and :math:`\epsilon`
+is the length of interface region. :math:`f(ϕ(x,t))` is a double well
+potential and can be represented as a fourth-order polynomial.
+
+.. math::  f = \frac{a^2}{2}\phi^2 (1 - \phi)^2
+
+The free paramter :math:`a` can be used to control the height of the
+free energy function while the free parameter $ $ can be used to control
+to interface width. The double well provides the thermodynamic driving
+force for phase seperation. While the gradient energy term
+:math:`\epsilon^2 \nabla^2 \phi` provides the driving force to keep the
+interface between the phases continous.
+
+In this example, a 2D concentration fields :math:`\phi` are simulated by
+solving the Cahn-Hilliard equation using the spectral method with
+periodic boundary conditions [1]. The simulated concentration fields are
+used to both calibrate the influence coefficients and validate the
+accuracy of the MKS model.
 
 .. code:: python
 
@@ -47,30 +67,28 @@ which can change over time, therefore the first order influence
 coefficients cannot be calibrated with delta microstructures. Instead a
 large number of simulations with random initial conditions are used to
 calibrate the first order influence coefficients using linear
-regression.
+regression. Let's show how this is done.
 
-The function ``make_cahn_hilliard`` from ``pymks.datasets`` provides an
-interface to generate calibration datasets for the influence
-coefficients. To use ``make_cahn_hilliard``, we need to set the number
-of samples we want to use to calibrate the influence coefficients using
-``n_samples``, the size of the simulation domain using ``size`` and the
-time step using ``dt``.
+The function ``make_cahnHilliard`` from ``pymks.datasets`` provides a
+nice interface to generate calibration datasets for the influence
+coefficients. To use ``make_cahnHilliard``, we need to set the number of
+samples we want to use to calibrate the influence coefficients using
+``n_samples`` as well as the size of the simulation using ``size``.
 
 .. code:: python
 
     import pymks
-    from pymks.datasets import make_cahn_hilliard
+    from pymks.datasets import make_cahnHilliard
     
-    L = 41
+    L = 40
     n_samples = 400
-    dt = 1e-2
+    dt=1e-2
     np.random.seed(99)
-    X, y = make_cahn_hilliard(n_samples=n_samples, size=(L, L), dt=dt)
+    X, y = make_cahnHilliard(n_samples=n_samples, size=(L, L), dt=dt)
 
-The function ``make_cahnHilliard`` generates ``n_samples`` number of
-random microstructures, ``X``, and the associated updated
-microstructures, ``y``, after one time step ``y``. The following cell
-plots one of these microstructures along with its update.
+The function ``make_cahnHilliard`` has generated ``n_samples`` number of
+random microstructures ``X`` and returned the same microstructures after
+they have evolved one time step ``y``. Let's take a look at one of them.
 
 .. code:: python
 
@@ -78,8 +96,14 @@ plots one of these microstructures along with its update.
     
     draw_concentrations(X[0], y[0], title0='time=0', title1='time = 1')
 
+.. parsed-literal::
 
-.. image:: cahn_hilliard_files/cahn_hilliard_6_0.png
+    /home/wd15/anaconda/lib/python2.7/site-packages/matplotlib/figure.py:1595: UserWarning: This figure includes Axes that are not compatible with tight_layout, so its results might be incorrect.
+      warnings.warn("This figure includes Axes that are not "
+
+
+
+.. image:: cahn_hilliard_files/cahn_hilliard_6_1.png
 
 
 Calibrate Influence Coefficients
@@ -89,11 +113,9 @@ As mentioned above, the microstructures (concentration fields) does not
 have discrete phases. This leaves the number of local states in local
 state space as a free hyper parameter. In previous work it has been
 shown that as you increase the number of local states, the accuracy of
-MKS model increases (see `Fast et
-al. <http://dx.doi.org/10.1016/j.actamat.2010.10.008>`__), but as the
-number of local states increases, the difference in accuracy decreases.
-Some work needs to be done in order to find the practical number of
-local states that we will use.
+MKS model increases [2], but as the number of local states increases,
+the difference in accuracy decreases. Some work needs to be done in
+order to find the practical number of local states that we will use.
 
 Optimizing the Number of Local States
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -111,9 +133,14 @@ split can be set using ``random_state``.
     import sklearn
     from sklearn.cross_validation import train_test_split
     
-    split_shape = (X.shape[0],) + (np.product(X.shape[1:]),)
-    X_train, X_test, y_train, y_test = train_test_split(X.reshape(split_shape), y.reshape(split_shape),
-                                                        test_size=0.5, random_state=3)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=3)
+    print X_train.shape
+
+.. parsed-literal::
+
+    (200, 40, 40)
+
+
 We are now going to calibrate the influence coefficients while varying
 the number of local states from 2 up to 20. Each of these models will
 then predict the evolution of the concentration fields. Mean square
@@ -147,7 +174,7 @@ overfit the data.
     basis = ContinuousIndicatorBasis(2, [-1, 1])
     model = MKSRegressionModel(basis)
     scoring = metrics.make_scorer(lambda a, b: -mse(a, b))
-    gs = GridSearchCV(model, parameters_to_tune, cv=5, scoring=scoring, fit_params={'size': (L, L)})
+    gs = GridSearchCV(model, parameters_to_tune, cv=5, scoring=scoring)
     gs.fit(X_train, y_train)
 
 
@@ -155,9 +182,9 @@ overfit the data.
 .. parsed-literal::
 
     GridSearchCV(cv=5,
-           estimator=MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae3801a590>,
+           estimator=MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fa61aabfd10>,
               n_states=2),
-           fit_params={'size': (41, 41)}, iid=True, loss_func=None, n_jobs=1,
+           fit_params={}, iid=True, loss_func=None, n_jobs=1,
            param_grid={'n_states': array([ 2,  3,  4,  5,  6,  7,  8,  9, 10])},
            pre_dispatch='2*n_jobs', refit=True, score_func=None,
            scoring=make_scorer(<lambda>), verbose=0)
@@ -171,9 +198,9 @@ overfit the data.
 
 .. parsed-literal::
 
-    MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fae38174b50>,
+    MKSRegressionModel(basis=<pymks.bases.continuous.ContinuousIndicatorBasis object at 0x7fa61a8b2fd0>,
               n_states=10)
-    0.99999908222
+    0.999999081316
 
 
 .. code:: python
@@ -222,10 +249,10 @@ Cahn-Hilliard simulation we need an instance of the class
 
 .. code:: python
 
-    from pymks.datasets.cahn_hilliard_simulation import CahnHilliardSimulation
+    from pymks.datasets.cahnHilliardSimulation import CahnHilliardSimulation
     np.random.seed(191)
     
-    phi0 = np.random.normal(0, 1e-9, (1, L, L))
+    phi0 = 2 * np.random.random((1, L, L)) - 1
     CHSim = CahnHilliardSimulation(dt=dt)
     phi = phi0.copy()
     phi_pred = phi0.copy()
@@ -239,8 +266,7 @@ into the Cahn-Hilliard simulation and the MKS model.
     time_steps = 10
     
     for ii in range(time_steps):
-        CHSim.run(phi)
-        phi = CHSim.response
+        phi = CHSim.get_response(phi)
         phi_pred = MKSmodel.predict(phi_pred)
 Let's take a look at the concentration fields.
 
@@ -268,7 +294,7 @@ coefficients and provide a larger initial concentratio field.
     N = 3 * L
     MKSmodel.resize_coeff((N, N))
     
-    phi0 = np.random.normal(0, 1e-9, (1, N, N))
+    phi0 = 2 * np.random.random((1, N, N)) - 1
     phi = phi0.copy()
     phi_pred = phi0.copy()
 Once again we are going to march forward in time by feeding the
@@ -278,8 +304,7 @@ model.
 .. code:: python
 
     for ii in range(1000):
-        CHSim.run(phi)
-        phi = CHSim.response
+        phi = CHSim.get_response(phi)
         phi_pred = MKSmodel.predict(phi_pred)
 Let's take a look at the results.
 
@@ -295,3 +320,16 @@ Let's take a look at the results.
 
 The MKS model with resized influence coefficients was able to reasonably
 predict the structure evolution for a larger concentration field.
+
+References
+----------
+
+[1] Ye X., Cheng X., The Fourier spectral method for the Cahn-Hilliard
+equation. Applied Mathematics and Computation, 171, 1, 345-357, 2005.
+`doi:10.1016/j.amc.2005.01.050 <http://dx.doi.org/10.1016/j.amc.2005.01.050>`__
+
+[2] Fast T., Niezgoda S., Kalidindi S.R., A new framework for
+computationally efficient structure–structure evolution linkages to
+facilitate high-fidelity scale bridging in multi-scale materials models
+59, 2, 699-707, 2011.
+`doi:10.1016/j.actamat.2010.10.008 <http://dx.doi.org/10.1016/j.actamat.2010.10.008>`__
