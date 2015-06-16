@@ -1,10 +1,10 @@
 
-Derivation of Materials Knowledge Systems Equation using Linear Elasticity
-==========================================================================
+Derivation of MKS Localization Equation
+=======================================
 
-The goal of this notebook is to derivate the MKS equation from
-elastostatic equilibrium equation. Note that the MKS equation can be
-derivated from other partial differential equations.
+The goal of this notebook is to derivate the Materials Knowledge Systems
+(MKS) equation from elastostatic equilibrium equation. Note that the MKS
+equation can be derivated from other partial differential equations.
 
 Definitions
 ~~~~~~~~~~~
@@ -84,7 +84,11 @@ green's functions by integrating by parts.
 .. math::
 
 
-   \varepsilon'_{kl}(x) = \Bigg [ \int_S \frac{\big (G_{ik,l}(r) + G_{il,k}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ] n_j dS\Bigg ]_{r \rightarrow 0}^{r \rightarrow \infty} -  \int_V \frac{\big (G_{ik,lj}(r) + G_{il,kj}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]dr
+   \varepsilon'_{kl}(x) = \Bigg [ \int_S \frac{\big (G_{ik,l}(r) + G_{il,k}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ] n_j dS\Bigg ]_{r \rightarrow 0}^{r \rightarrow \infty} - 
+
+.. math::
+
+    \int_V \frac{\big (G_{ik,lj}(r) + G_{il,kj}(r) \big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]dr
 
 Principal Value Singularity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,7 +110,7 @@ is the green's function terms, and
 
 .. math:: I_{ikjl}^{\infty} = \lim_{r \rightarrow \infty} \int_S\frac{\big (G_{ik,l}(r) + G_{il,k}(r)\big)}{2} \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]n_l dS 
 
-.. math:: E_{ikjl}(x) = \Big [C'_{ijlk}(x)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x)\varepsilon'_{lk}(x)\big ]\Big ]\lim_{r \rightarrow 0} \int_S\frac{\big (G_{ik,l}(r) + G_{il,k}(r)\big)}{2} n_l dS 
+.. math:: E_{ikjl}(x) = \lim_{r \rightarrow 0} \int_S\frac{\big (G_{ik,l}(r) + G_{il,k}(r)\big)}{2} n_l dS 
 
 are the contribution from the surface integrals at :math:`\infty` and
 from the singularity.
@@ -119,8 +123,8 @@ the strain can then be written in the following form.
 
 .. math:: \varepsilon'_{kl}(x) = \int_V \Gamma_{ikjl}(r) \Big [C'_{ijlk}(x-r)\bar{\varepsilon}_{lk} + \big [C'_{ijlk}(x-r)\varepsilon'_{lk}(x-r)\big ]\Big ]dr 
 
-Kroner's Expansion
-~~~~~~~~~~~~~~~~~~
+Weak Contrast Expansion
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. math:: \varepsilon'(x) =\int_V \Gamma(r) C'(x-r) [ \bar{\varepsilon} + \varepsilon'(x-r)]dr 
 
@@ -130,7 +134,7 @@ equation, we get the following series.
 .. math::
 
 
-   \varepsilon'(x) =\int_V \Gamma(r) C'(x-r) \bar{\varepsilon} dr +\int_V \int_V \Big[ \Gamma(r) C'(x-r)\bar{\varepsilon}\Big ]\Big [\Gamma(r')  C'(x-r') \bar{\varepsilon}\Big] dr'dr + \int_V \int_V \int_V \Big[ \Gamma(r) C'(x-r)\bar{\varepsilon}\Big] \Big[  \Gamma(r')C'(x-r') \bar{\varepsilon}\Big] \Big[  \Gamma(r'')  C'(x-r'')\bar{\varepsilon} \Big]dr''dr'dr + ...
+   \varepsilon'(x) =\int_V \Gamma(r) C'(x-r) \bar{\varepsilon} dr +\int_V \int_V \Big[ \Gamma(r) C'(x-r)\bar{\varepsilon}\Big ]\Big [\Gamma(r')  C'(x-r') \bar{\varepsilon}\Big] dr'dr + ...
 
 As long as
 
@@ -144,30 +148,33 @@ Materials Knowledge Systems
 
 Let
 
-.. math::  C'(x-r) = C_h m_h(x-r)
+.. math::  C'(x-r) = \int_H h m(h, x-r) dh
 
-where the summation over :math:`h` discribes all of the local states of
-the stiffness tensor :math:`C'(r)`. :math:`m_h(r)` is the microstructure
-function and is an indicator function for each of the local states.
+where :math:`m(h, r)` is the microstructure function which is a
+probablity density that spans both the local state space :math:`h` and
+real space :math:`x`. The expectation of local state variable for the
+microstructure function is the integral over the local state space
+:math:`H` and discribes the expected local state :math:`h` which is
+equal to :math:`C'(r)`.
 
 Also let
 
-.. math:: \alpha_h(r) = \Gamma(r)C_h\bar{\varepsilon} 
+.. math:: \alpha(h, r) = \Gamma(r) h \bar{\varepsilon} 
 
-.. math:: \alpha_{hh'}(r,r') = \Gamma(r)C_h\bar{\varepsilon} \Gamma(r') C_{h'} \bar{\varepsilon}  
+.. math:: \alpha(h, h', r, r') = \Gamma(r) h \bar{\varepsilon} \Gamma(r') h' \bar{\varepsilon}  
 
 .. math::  etc... 
 
-where again :math:`h` is the local state.
+where again :math:`h` is the local state variable.
 
-Plugging these definitations into Kroner's expansion recasts the series
-in the following form.
+Plugging these definitations into the Weak Contrast Expansion recasts
+the series in the following form.
 
-.. math:: \varepsilon'(x) =\int_V \alpha_h(r) m_h(x-r) dr +\int_V \int_V \alpha_{hh'}(r,r') m_h(x-r) m_{h'}(x-r') dr'dr+ \int_V \int_V \int_V \alpha_{hh'h''}(r,r',r'')m_h(x-r) m_{h'}(x-r') m_{h''}(x-r'')dr''dr'dr + ...
+.. math:: \varepsilon '(x) =\int_V \int_H \alpha(h, r) m(h, x-r) dr + \int_V \int_V \alpha_(h, h', r, r') m(h, x-r) m(h', x-r') dr'dr + ...
 
-The discrete version of this equation is the MKS.
+The discrete version of this equation is the MKS localization.
 
-.. math:: \varepsilon'[x] =\sum_{r=1}^S \alpha_h[r] m_h[x-r] +\sum_{r=1}^S \sum_{r'=1}^S \alpha_{hh'}[r,r'] m_h[x-r] m_{h'}[x-r'] + \sum_{r=1}^S \sum_{r'=1}^S \sum_{r''=1}^S \alpha_{hh'h''}[r,r',r'']m_h(x-r) m_{h'}[x-r'] m_{h''}[x-r'']+ ...
+.. math:: \varepsilon'[s] = \sum_{l=0}^{L-1} \sum_{r=0}^{S-1} \alpha[l, r] m[l, s-r] +\sum_{l=0}^{L-1} \sum_{l'=0}^{L-1} \sum_{r=0}^{S-1} \sum_{r'=0}^{S-1} \alpha[l, l', r, r'] m[l, s-r] m_[l', s-r'] + ... 
 
 References
 ----------

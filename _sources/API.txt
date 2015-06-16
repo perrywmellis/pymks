@@ -2,26 +2,12 @@
 API
 ===
 
-MKS Models
-==========
+.. toctree::
+   :maxdepth: 1
 
-.. autoclass:: pymks.mksRegressionModel.MKSRegressionModel
-   :members:
-
-
-Data Generation
-===============
-
-.. automodule:: pymks.datasets
-   :members:
-
-Microstructure Bases
-====================
-
-.. automodule:: pymks.bases
-   :members:
-
-Testing
-=======
-
-.. autofunction:: pymks.test
+   MKSmodels.rst
+   spatial_statistics.rst
+   datageneration.rst
+   bases.rst
+   tools.rst
+   testing.rst

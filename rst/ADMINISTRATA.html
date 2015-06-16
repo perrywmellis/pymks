@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -11,14 +10,14 @@
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.1.0/cosmo/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.2.0/cosmo/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pymks.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1-dev',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +29,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="shortcut icon" href="../_static/pymks_logo.ico"/>
     <link rel="top" title="PyMKS" href="../index.html" />
@@ -53,18 +52,17 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1-dev</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
-            <li class="divider-vertical"></li>
             
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
                 <li><a href="../API.html">API</a></li>
-                <li><a href="https://github.com/wd15/pymks/">Github</a></li>
+                <li><a href="https://github.com/materialsinnovation/pymks/">Github</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -77,7 +75,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -133,6 +132,15 @@ test coverage</li>
 <li>All documentation with <a class="reference external" href="http://google-styleguide.googlecode.com/svn/trunk/pyguide.html#Comments">Google Python doc
 styling</a>.</li>
 </ul>
+<p>Steps to install</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install sphinx
+$ pip install sphinx_bootstrap_theme
+$ pip install sphinxcontrib-napoleon
+$ cd doc/
+$ make
+</pre></div>
+</div>
+<p>The documentation should be in <tt class="docutils literal"><span class="pre">_build/html</span></tt>.</p>
 </div>
 <div class="section" id="branching">
 <h2>Branching<a class="headerlink" href="#branching" title="Permalink to this headline">¶</a></h2>
@@ -178,7 +186,7 @@ styling</a>.</li>
       
     </p>
     <p>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3.<br/>
     </p>
   </div>
 </footer>

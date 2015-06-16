@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,18 +6,18 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>What are 2-Point Spatial Correlations (also called 2-Point Statistics)? &mdash; PyMKS</title>
+    <title>Checkerboard Microstructure &mdash; PyMKS</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.1.0/cosmo/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.2.0/cosmo/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pymks.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -30,7 +29,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="shortcut icon" href="../_static/pymks_logo.ico"/>
     <link rel="top" title="PyMKS" href="../index.html" />
@@ -53,13 +52,12 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
-           </a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+          PyMKS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
-            <li class="divider-vertical"></li>
             
                 <li><a href="INSTALLATION.html">Installation</a></li>
                 <li><a href="../EXAMPLES.html">Examples</a></li>
@@ -77,7 +75,8 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../THEORY.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of Materials Knowledge Systems Equation using Linear Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="derivation.html">Derivation of MKS Localization Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tech_overview.html">Technical Overview</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="CREDITS.html">Authors</a></li>
@@ -105,10 +104,10 @@
   <div class="row">
     <div class="col-md-12">
       
-  <div class="section" id="what-are-2-point-spatial-correlations-also-called-2-point-statistics">
-<h1>What are 2-Point Spatial Correlations (also called 2-Point Statistics)?<a class="headerlink" href="#what-are-2-point-spatial-correlations-also-called-2-point-statistics" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="checkerboard-microstructure">
+<h1>Checkerboard Microstructure<a class="headerlink" href="#checkerboard-microstructure" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction-what-are-2-point-spatial-correlations-also-called-2-point-statistics">
+<h2>Introduction - What are 2-Point Spatial Correlations (also called 2-Point Statistics)?<a class="headerlink" href="#introduction-what-are-2-point-spatial-correlations-also-called-2-point-statistics" title="Permalink to this headline">¶</a></h2>
 <p>The purpose of this example is to introduce 2-point spatial correlations
 and how they are computed using PyMKS.</p>
 <p>The example starts with some introductory information about spatial
@@ -119,11 +118,10 @@ microstructure. This is a relatively simple example that allows an easy
 discussion of how the spatial correlations capture the main features
 seen in the original microstructure.</p>
 </div>
-</div>
 <div class="section" id="n-point-spatial-correlations">
-<h1>n-Point Spatial Correlations<a class="headerlink" href="#n-point-spatial-correlations" title="Permalink to this headline">¶</a></h1>
+<h2>n-Point Spatial Correlations<a class="headerlink" href="#n-point-spatial-correlations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="point-spatial-correlations-or-1-point-statistics">
-<h2>1-Point Spatial Correlations (or 1-point statistics)<a class="headerlink" href="#point-spatial-correlations-or-1-point-statistics" title="Permalink to this headline">¶</a></h2>
+<h3>1-Point Spatial Correlations (or 1-point statistics)<a class="headerlink" href="#point-spatial-correlations-or-1-point-statistics" title="Permalink to this headline">¶</a></h3>
 <p>n-point spatial correlations provide a way rigorously quantify material
 structure using statistics. As an introduction n-point spatial
 correlations, let&#8217;s first discuss 1-point statistics. 1-point statistics
@@ -134,10 +132,10 @@ states, one is colored white and the other is colored black. 1-point
 statistics compute the volume fractions of the local states in the
 microstructure. 1-point statistics are computed as</p>
 <div class="math">
-\[f[h] = \frac{1}{S} \sum_s m[s,h]\]</div>
-<p>In this equation, <span class="math">\(f[h]\)</span> is the probability of finding the local
-state <span class="math">\(h\)</span> in any randomly selected spatial bin in the
-microstructure, <span class="math">\(m[s, h]\)</span> is the microstructure function (the
+\[f[l] = \frac{1}{S} \sum_s m[s,l]\]</div>
+<p>In this equation, <span class="math">\(f[l]\)</span> is the probability of finding the local
+state <span class="math">\(l\)</span> in any randomly selected spatial bin in the
+microstructure, <span class="math">\(m[s, l]\)</span> is the microstructure function (the
 digital representation of the microstructure), <span class="math">\(S\)</span> is the total
 number of spatial bins in the microstructure and <span class="math">\(s\)</span> refers to a
 specific spatial bin.</p>
@@ -148,7 +146,7 @@ Therefore, 1-point statistics are a limited set of metrics to describe
 the structure of materials.</p>
 </div>
 <div class="section" id="point-spatial-correlations">
-<h2>2-Point Spatial Correlations<a class="headerlink" href="#point-spatial-correlations" title="Permalink to this headline">¶</a></h2>
+<h3>2-Point Spatial Correlations<a class="headerlink" href="#point-spatial-correlations" title="Permalink to this headline">¶</a></h3>
 <p>2-point spatial correlations (also known as 2-point statistics) contain
 information about the fractions of local states as well as the first
 order information on how the different local states are distributed in
@@ -160,20 +158,20 @@ specified local state. This vector could have any length or orientation
 that the discrete microstructure allows. The equation for 2-point
 statistics can found below.</p>
 <div class="math">
-\[f[r \vert h, h'] = \frac{1}{S} \sum_s m[s, h] m[s + r, h']\]</div>
-<p>In this equation $ f[r h, h&#8217;]$ is the conditional probability of finding
-the local states <span class="math">\(h\)</span> and <span class="math">\(h'\)</span> at a distance and orientation
+\[f[r \vert l, l'] = \frac{1}{S} \sum_s m[s, l] m[s + r, l']\]</div>
+<p>In this equation $ f[r l, l&#8217;]$ is the conditional probability of finding
+the local states <span class="math">\(l\)</span> and <span class="math">\(l'\)</span> at a distance and orientation
 away from each other defined by the vector <span class="math">\(r\)</span>. All other
 variables are the same as those in the 1-point statistics equation. In
 the case that we have an eigen microstructure function (it only contains
 values of 0 or 1) and we are using an indicator basis, the the
 <span class="math">\(r=0\)</span> vector will recover the 1-point statistics.</p>
-<p>When the 2 local states are the same <span class="math">\(h = h'\)</span>, it is referred to
+<p>When the 2 local states are the same <span class="math">\(l = l'\)</span>, it is referred to
 as a autocorrelation. If the 2 local states are not the same it is
 referred to as a crosscorrelation.</p>
 </div>
 <div class="section" id="higher-order-spatial-statistics">
-<h2>Higher Order Spatial Statistics<a class="headerlink" href="#higher-order-spatial-statistics" title="Permalink to this headline">¶</a></h2>
+<h3>Higher Order Spatial Statistics<a class="headerlink" href="#higher-order-spatial-statistics" title="Permalink to this headline">¶</a></h3>
 <p>Higher order spatial statistics are similar to 2-point statistics, in
 that they can be thought of in terms of conditional probabilities of
 finding specified local states separated by a prescribed set of vectors.
@@ -188,17 +186,18 @@ than higher order spatial statistics, and still provide information
 about how the local states are distributed. For this reason, only
 2-point statistics are implemented into PyMKS. Let us look at an example
 of computing the 2-point statistics for a checkerboard microstructure.</p>
-<div class="code python highlight-python"><pre>%matplotlib inline
+<div class="code python highlight-python"><div class="highlight"><pre>%matplotlib inline
 %load_ext autoreload
 %autoreload 2
 
 import numpy as np
-import matplotlib.pyplot as plt</pre>
+import matplotlib.pyplot as plt
+</pre></div>
 </div>
 </div>
 </div>
 <div class="section" id="point-statistics-for-checkerboard-microstructure">
-<h1>2-Point Statistics for Checkerboard Microstructure<a class="headerlink" href="#point-statistics-for-checkerboard-microstructure" title="Permalink to this headline">¶</a></h1>
+<h2>2-Point Statistics for Checkerboard Microstructure<a class="headerlink" href="#point-statistics-for-checkerboard-microstructure" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s first start with making a microstructure that looks like a 8 x 8
 checkerboard. Although this type of microstructure may not resemble a
 physical system, it provides solutions that give some intuitive
@@ -213,15 +212,16 @@ understanding of 2-point statistics.</p>
 <p>Now let&#8217;s take a look at how the microstructure looks.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_microstructures</span>
 
-<span class="n">draw_microstructures</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">draw_microstructures</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
 <span class="k">print</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
+<img alt="../_images/checker_board_6_0.png" src="../_images/checker_board_6_0.png" />
 <div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">168</span><span class="p">,</span> <span class="mi">168</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/checker_board_6_1.png" src="../_images/checker_board_6_1.png" />
+</div>
 <div class="section" id="compute-periodic-2-point-statistics">
 <h2>Compute Periodic 2-Point Statistics<a class="headerlink" href="#compute-periodic-2-point-statistics" title="Permalink to this headline">¶</a></h2>
 <p>Now that we have created a microstructure to work with, we can start
@@ -234,12 +234,12 @@ periodic.</p>
 <p>In order to compute 2-pont statistics, we need to select a basis to
 generate the microstructure function <tt class="docutils literal"><span class="pre">X_</span></tt> from the microstructure
 <tt class="docutils literal"><span class="pre">X</span></tt>. Because we only have values of 0 or 1 in our microstructure we
-will using the <tt class="docutils literal"><span class="pre">DiscreteIndicatorBasis</span></tt> with <tt class="docutils literal"><span class="pre">n_states</span></tt> equal to 2.</p>
+will using the <tt class="docutils literal"><span class="pre">PrimitiveBasis</span></tt> with <tt class="docutils literal"><span class="pre">n_states</span></tt> equal to 2.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.stats</span> <span class="kn">import</span> <span class="n">autocorrelate</span>
-<span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">DiscreteIndicatorBasis</span>
+<span class="kn">from</span> <span class="nn">pymks</span> <span class="kn">import</span> <span class="n">PrimitiveBasis</span>
 
-<span class="n">discrete_basis</span> <span class="o">=</span> <span class="n">DiscreteIndicatorBasis</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">X_</span> <span class="o">=</span> <span class="n">discrete_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">prim_basis</span> <span class="o">=</span> <span class="n">PrimitiveBasis</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">X_</span> <span class="o">=</span> <span class="n">prim_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">X_auto</span> <span class="o">=</span> <span class="n">autocorrelate</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">periodic_axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -248,7 +248,8 @@ will using the <tt class="docutils literal"><span class="pre">DiscreteIndicatorB
 <tt class="docutils literal"><span class="pre">pymks.tools</span></tt>.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_autocorrelations</span>
 
-<span class="n">draw_autocorrelations</span><span class="p">(</span><span class="n">X_auto</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">correlations</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="s">&#39;black&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;white&#39;</span><span class="p">,</span> <span class="s">&#39;white&#39;</span><span class="p">)]</span>
+<span class="n">draw_autocorrelations</span><span class="p">(</span><span class="n">X_auto</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">autocorrelations</span><span class="o">=</span><span class="n">correlations</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/checker_board_10_0.png" src="../_images/checker_board_10_0.png" />
@@ -266,8 +267,9 @@ and the we have eigen-microstructure functions (values are either 0 or
 <span class="k">print</span> <span class="s">&#39;Volume fraction of white phase&#39;</span><span class="p">,</span> <span class="n">X_auto</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-python"><pre>Volume fraction of black phase 0.5
-Volume fraction of white phase 0.5</pre>
+<div class="highlight-python"><div class="highlight"><pre>Volume fraction of black phase 0.500000006869
+Volume fraction of white phase 0.500000006869
+</pre></div>
 </div>
 <p>We can compute the cross-correlation of the microstructure function
 using the <tt class="docutils literal"><span class="pre">crosscorrelate</span></tt> function from <tt class="docutils literal"><span class="pre">pymks.stats</span></tt></p>
@@ -280,7 +282,8 @@ using the <tt class="docutils literal"><span class="pre">crosscorrelate</span></
 <tt class="docutils literal"><span class="pre">draw_crosscorrelations</span></tt> from <tt class="docutils literal"><span class="pre">pymks.tools</span></tt>.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_crosscorrelations</span>
 
-<span class="n">draw_crosscorrelations</span><span class="p">(</span><span class="n">X_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">correlations</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="s">&#39;white&#39;</span><span class="p">)]</span>
+<span class="n">draw_crosscorrelations</span><span class="p">(</span><span class="n">X_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">crosscorrelations</span><span class="o">=</span><span class="n">correlations</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/checker_board_16_0.png" src="../_images/checker_board_16_0.png" />
@@ -293,12 +296,12 @@ phases (colored black and white) to co-exist in the same spatial voxel.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;Center value&#39;</span><span class="p">,</span> <span class="n">X_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-python"><pre>Center value -2.20965670985e-16</pre>
-</div>
+<div class="highlight-python"><div class="highlight"><pre>Center value 7.48243552237e-17
+</pre></div>
 </div>
 </div>
 <div class="section" id="compute-non-periodic-2-point-statistics">
-<h1>Compute Non-Periodic 2-Point Statistics<a class="headerlink" href="#compute-non-periodic-2-point-statistics" title="Permalink to this headline">¶</a></h1>
+<h2>Compute Non-Periodic 2-Point Statistics<a class="headerlink" href="#compute-non-periodic-2-point-statistics" title="Permalink to this headline">¶</a></h2>
 <p>We will now compute the non-periodic 2-point statistics for our
 microstructure. This time rather than using the <tt class="docutils literal"><span class="pre">autocorrelate</span></tt> and
 <tt class="docutils literal"><span class="pre">crosscorrelate</span></tt> functions, we will use the <tt class="docutils literal"><span class="pre">correlate</span></tt> function
@@ -316,7 +319,8 @@ computed the non-periodic statistics by omitting the keyword argument
 will look at all of them.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_correlations</span>
 
-<span class="n">draw_correlations</span><span class="p">(</span><span class="n">X_corr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">correlations</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<span class="n">correlations</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="s">&#39;black&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;white&#39;</span><span class="p">,</span> <span class="s">&#39;white&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="s">&#39;white&#39;</span><span class="p">)]</span>
+<span class="n">draw_correlations</span><span class="p">(</span><span class="n">X_corr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">correlations</span><span class="o">=</span><span class="n">correlations</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../_images/checker_board_22_0.png" src="../_images/checker_board_22_0.png" />
@@ -327,12 +331,14 @@ equal to the volume fractions.</p>
 <span class="k">print</span> <span class="s">&#39;Volume fraction of white phase&#39;</span><span class="p">,</span> <span class="n">X_corr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-python"><pre>Volume fraction of black phase 0.5
-Volume fraction of white phase 0.5</pre>
+<div class="highlight-python"><div class="highlight"><pre>Volume fraction of black phase 0.5
+Volume fraction of white phase 0.5
+</pre></div>
 </div>
 <p>The non-periodic statistics are different from the periodic 2-point
 statistics along the diagonal vectors, but in both cases the probability
 of (0, 0) vector is still the volume fraction.</p>
+</div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <p>[1] S.R. Niezgoda, D.T. Fullwood, S.R. Kalidindi, Delineation of the
@@ -363,7 +369,7 @@ NY, 2009.</p>
       
     </p>
     <p>
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.<br/>
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2.3.<br/>
     </p>
   </div>
 </footer>

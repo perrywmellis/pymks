@@ -1,9 +1,9 @@
 
-What are 2-Point Spatial Correlations (also called 2-Point Statistics)?
-=======================================================================
+Checkerboard Microstructure
+===========================
 
-Introduction
-------------
+Introduction - What are 2-Point Spatial Correlations (also called 2-Point Statistics)?
+--------------------------------------------------------------------------------------
 
 The purpose of this example is to introduce 2-point spatial correlations
 and how they are computed using PyMKS.
@@ -17,10 +17,10 @@ discussion of how the spatial correlations capture the main features
 seen in the original microstructure.
 
 n-Point Spatial Correlations
-============================
+----------------------------
 
 1-Point Spatial Correlations (or 1-point statistics)
-----------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 n-point spatial correlations provide a way rigorously quantify material
 structure using statistics. As an introduction n-point spatial
@@ -32,11 +32,11 @@ states, one is colored white and the other is colored black. 1-point
 statistics compute the volume fractions of the local states in the
 microstructure. 1-point statistics are computed as
 
-.. math::  f[h] = \frac{1}{S} \sum_s m[s,h] 
+.. math::  f[l] = \frac{1}{S} \sum_s m[s,l] 
 
-In this equation, :math:`f[h]` is the probability of finding the local
-state :math:`h` in any randomly selected spatial bin in the
-microstructure, :math:`m[s, h]` is the microstructure function (the
+In this equation, :math:`f[l]` is the probability of finding the local
+state :math:`l` in any randomly selected spatial bin in the
+microstructure, :math:`m[s, l]` is the microstructure function (the
 digital representation of the microstructure), :math:`S` is the total
 number of spatial bins in the microstructure and :math:`s` refers to a
 specific spatial bin.
@@ -48,7 +48,7 @@ Therefore, 1-point statistics are a limited set of metrics to describe
 the structure of materials.
 
 2-Point Spatial Correlations
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 2-point spatial correlations (also known as 2-point statistics) contain
 information about the fractions of local states as well as the first
@@ -62,22 +62,22 @@ specified local state. This vector could have any length or orientation
 that the discrete microstructure allows. The equation for 2-point
 statistics can found below.
 
-.. math::  f[r \vert h, h'] = \frac{1}{S} \sum_s m[s, h] m[s + r, h'] 
+.. math::  f[r \vert l, l'] = \frac{1}{S} \sum_s m[s, l] m[s + r, l'] 
 
-In this equation $ f[r h, h']$ is the conditional probability of finding
-the local states :math:`h` and :math:`h'` at a distance and orientation
+In this equation $ f[r l, l']$ is the conditional probability of finding
+the local states :math:`l` and :math:`l'` at a distance and orientation
 away from each other defined by the vector :math:`r`. All other
 variables are the same as those in the 1-point statistics equation. In
 the case that we have an eigen microstructure function (it only contains
 values of 0 or 1) and we are using an indicator basis, the the
 :math:`r=0` vector will recover the 1-point statistics.
 
-When the 2 local states are the same :math:`h = h'`, it is referred to
+When the 2 local states are the same :math:`l = l'`, it is referred to
 as a autocorrelation. If the 2 local states are not the same it is
 referred to as a crosscorrelation.
 
 Higher Order Spatial Statistics
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Higher order spatial statistics are similar to 2-point statistics, in
 that they can be thought of in terms of conditional probabilities of
@@ -104,7 +104,7 @@ of computing the 2-point statistics for a checkerboard microstructure.
     import numpy as np
     import matplotlib.pyplot as plt
 2-Point Statistics for Checkerboard Microstructure
-==================================================
+--------------------------------------------------
 
 Let's first start with making a microstructure that looks like a 8 x 8
 checkerboard. Although this type of microstructure may not resemble a
@@ -125,17 +125,17 @@ Now let's take a look at how the microstructure looks.
 
     from pymks.tools import draw_microstructures
     
-    draw_microstructures(X[0])
+    draw_microstructures(X)
     
     print X.shape
+
+
+.. image:: checker_board_files/checker_board_6_0.png
+
 
 .. parsed-literal::
 
     (1, 168, 168)
-
-
-
-.. image:: checker_board_files/checker_board_6_1.png
 
 
 Compute Periodic 2-Point Statistics
@@ -152,15 +152,15 @@ periodic.
 In order to compute 2-pont statistics, we need to select a basis to
 generate the microstructure function ``X_`` from the microstructure
 ``X``. Because we only have values of 0 or 1 in our microstructure we
-will using the ``DiscreteIndicatorBasis`` with ``n_states`` equal to 2.
+will using the ``PrimitiveBasis`` with ``n_states`` equal to 2.
 
 .. code:: python
 
     from pymks.stats import autocorrelate
-    from pymks import DiscreteIndicatorBasis
+    from pymks import PrimitiveBasis
     
-    discrete_basis = DiscreteIndicatorBasis(n_states=2)
-    X_ = discrete_basis.discretize(X)
+    prim_basis = PrimitiveBasis(n_states=2)
+    X_ = prim_basis.discretize(X)
     X_auto = autocorrelate(X_, periodic_axes=(0, 1))
 We have now computed the autocorrelations.
 
@@ -171,7 +171,8 @@ Let's take a look at them using ``draw_autocorrelations`` from
 
     from pymks.tools import draw_autocorrelations
     
-    draw_autocorrelations(X_auto[0])
+    correlations = [('black', 'black'), ('white', 'white')]
+    draw_autocorrelations(X_auto[0], autocorrelations=correlations)
 
 
 .. image:: checker_board_files/checker_board_10_0.png
@@ -197,8 +198,8 @@ Let's double check that both the phases have a volume fraction of 0.5.
 
 .. parsed-literal::
 
-    Volume fraction of black phase 0.5
-    Volume fraction of white phase 0.5
+    Volume fraction of black phase 0.500000006869
+    Volume fraction of white phase 0.500000006869
 
 
 We can compute the cross-correlation of the microstructure function
@@ -216,7 +217,8 @@ Let's take a look at the cross correlation using
 
     from pymks.tools import draw_crosscorrelations
     
-    draw_crosscorrelations(X_cross[0])
+    correlations = [('black', 'white')]
+    draw_crosscorrelations(X_cross[0], crosscorrelations=correlations)
 
 
 .. image:: checker_board_files/checker_board_16_0.png
@@ -236,11 +238,11 @@ Let check that it is zero.
 
 .. parsed-literal::
 
-    Center value -2.20965670985e-16
+    Center value 7.48243552237e-17
 
 
 Compute Non-Periodic 2-Point Statistics
-=======================================
+---------------------------------------
 
 We will now compute the non-periodic 2-point statistics for our
 microstructure. This time rather than using the ``autocorrelate`` and
@@ -263,7 +265,8 @@ will look at all of them.
 
     from pymks.tools import draw_correlations
     
-    draw_correlations(X_corr[0].real, correlations=[(1, 1), (2, 2), (1, 2)])
+    correlations = [('black', 'black'), ('white', 'white'), ('black', 'white')]
+    draw_correlations(X_corr[0].real, correlations=correlations)
 
 
 .. image:: checker_board_files/checker_board_22_0.png
