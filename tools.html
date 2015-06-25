@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.0',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="index.html"><img src="_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -160,7 +160,7 @@ scores result from GridSearchCV while varying two parameters.</p>
 <h2>draw_components<a class="headerlink" href="#draw-components" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="pymks.tools.draw_components">
-<tt class="descclassname">pymks.tools.</tt><tt class="descname">draw_components</tt><big>(</big><em>*datasets</em>, <em>**labels</em><big>)</big><a class="headerlink" href="#pymks.tools.draw_components" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pymks.tools.</tt><tt class="descname">draw_components</tt><big>(</big><em>datasets</em>, <em>labels</em>, <em>title=None</em>, <em>component_labels=None</em><big>)</big><a class="headerlink" href="#pymks.tools.draw_components" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualize low dimensional representations of microstructures.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -171,6 +171,8 @@ scores result from GridSearchCV while varying two parameters.</p>
 [n_samplles, n_componts]. The length of n_components must be 2 or
 3.</li>
 <li><strong>labels</strong> (<em>list, str</em>) &#8211; list of labes for each of each array datasets</li>
+<li><strong>title</strong> &#8211; main title for plot</li>
+<li><strong>component_labels</strong> &#8211; labels for components</li>
 </ul>
 </td>
 </tr>
@@ -208,8 +210,11 @@ reduction technique.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>fit_data</strong> (<em>1D array</em>) &#8211; Low dimensional data used to fit model</li>
-<li><strong>pred_data</strong> (<em>1D array</em>) &#8211; Low dimensional data used for prediction</li>
+<li><strong>fit_data</strong> (<em>2D array</em>) &#8211; Low dimensional representation of the prediction
+values of the data used to fit the model and the actual values.</li>
+<li><strong>pred_data</strong> (<em>2D array</em>) &#8211; Low dimensional representation of the prediction
+values of the data used for prediction with the model and the
+actual values.</li>
 </ul>
 </td>
 </tr>

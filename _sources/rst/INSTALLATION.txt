@@ -74,13 +74,10 @@ more details.
 Installation on Windows
 -----------------------
 
-It is recommended to follow the installation instructions below using
-`Anaconda <https://store.continuum.io/cshop/anaconda/>`__.
-
-Alternatively, if you already have a Python environment installed, all
-of the required packages and their dependencies can be downloaded from
-`Christoph Gohlke Unofficial Windows
-installers <http://www.lfd.uci.edu/~gohlke/pythonlibs/#scikit-learn>`__.
+We recommend you download and install `Anaconda Python
+Distribution <http://continuum.io/downloads>`__ for Python 2.7 and then
+download and install PyMKS using the `windows
+installer <https://www.dropbox.com/s/ja251y4f5ss2y44/PyMKS-x64-anaconda27.exe?dl=1>`__.
 
 Installation with Anaconda
 --------------------------

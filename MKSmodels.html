@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.0',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="index.html"><img src="_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -110,7 +110,7 @@
 <h2>MKSHomogenizationModel<a class="headerlink" href="#mkshomogenizationmodel" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pymks.mks_homogenization_model.MKSHomogenizationModel">
-<em class="property">class </em><tt class="descclassname">pymks.mks_homogenization_model.</tt><tt class="descname">MKSHomogenizationModel</tt><big>(</big><em>basis=None</em>, <em>dimension_reducer=None</em>, <em>n_components=None</em>, <em>property_linker=None</em>, <em>degree=1</em>, <em>correlations=None</em><big>)</big><a class="headerlink" href="#pymks.mks_homogenization_model.MKSHomogenizationModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pymks.mks_homogenization_model.</tt><tt class="descname">MKSHomogenizationModel</tt><big>(</big><em>basis=None</em>, <em>dimension_reducer=None</em>, <em>n_components=None</em>, <em>property_linker=None</em>, <em>degree=1</em>, <em>correlations=None</em>, <em>compute_correlations=True</em><big>)</big><a class="headerlink" href="#pymks.mks_homogenization_model.MKSHomogenizationModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <cite>MKSHomogenizationModel</cite> takes in microstructures and a their
 associated macroscopic property, and created a low dimensional structure
 property linkage. The <cite>MKSHomogenizationModel</cite> model is designed to
@@ -151,6 +151,20 @@ microstuctures.</p>
 <dt id="MKSHomogenizationModel.basis">
 <tt class="descname">basis</tt><a class="headerlink" href="#MKSHomogenizationModel.basis" title="Permalink to this definition">¶</a></dt>
 <dd><p>instance of a basis class</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="MKSHomogenizationModel.reduced_fit_data">
+<tt class="descname">reduced_fit_data</tt><a class="headerlink" href="#MKSHomogenizationModel.reduced_fit_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low dimensionality representation of spatial
+correlations used to fit the model.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="MKSHomogenizationModel.preduced_predict_data">
+<tt class="descname">preduced_predict_data</tt><a class="headerlink" href="#MKSHomogenizationModel.preduced_predict_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Low dimensionality representation of spatial
+correlations predicted by the model.</p>
 </dd></dl>
 
 <p>Below is an examlpe of using MKSHomogenizationModel to predict (or
@@ -206,6 +220,10 @@ property_linker.</li>
 compute, default is the autocorrelation with the first local
 state and all of its cross correlations. For example if basis
 has n_states=3, correlation would be [(0, 0), (0, 1), (0, 2)]</li>
+<li><strong>compute_correlations</strong> (<em>boolean, optional</em>) &#8211; If false spatial
+correlations will not be calculated as part of the fit and
+predict methods. The spatial correlations can be passed as <cite>X</cite>
+to both methods, default is True.</li>
 </ul>
 </td>
 </tr>
@@ -222,9 +240,9 @@ data with the property_linker.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>X</strong> (<em>ND array</em>) &#8211; The microstructure, an <cite>(n_samples, n_x, ...)</cite>
-shaped array where <cite>n_samples</cite> is the number of samples and
-<cite>n_x</cite> is the spatial discretization.</li>
+<li><strong>X</strong> (<em>ND array</em>) &#8211; The microstructures or spatial correlations, a
+<cite>(n_samples, n_x, ...)</cite> shaped array where <cite>n_samples</cite> is the
+number of samples and <cite>n_x</cite> is the spatial discretization.</li>
 <li><strong>y</strong> (<em>1D array</em>) &#8211; The material property associated with <cite>X</cite>.</li>
 <li><strong>reducer_labels</strong> (<em>1D array, optional</em>) &#8211; label for X used during the
 fit_transform method for the <cite>dimension_reducer</cite>.</li>
@@ -262,7 +280,34 @@ used to assign a confidence value for each data point.</li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X_reshaped</span> <span class="o">=</span> <span class="n">X_stats</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">X_stats</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X_pca</span> <span class="o">=</span> <span class="n">reducer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_reshaped</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X_reshaped</span><span class="p">,</span>
 <span class="gp">... </span>                              <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="bp">None</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">fit_data</span><span class="p">,</span> <span class="n">X_pca</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reduced_fit_data</span><span class="p">,</span> <span class="n">X_pca</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now let&#8217;s use the same method with spatial correlations instead of
+microtructures.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.bases</span> <span class="kn">import</span> <span class="n">PrimitiveBasis</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.stats</span> <span class="kn">import</span> <span class="n">correlate</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">reducer</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">linker</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prim_basis</span> <span class="o">=</span> <span class="n">PrimitiveBasis</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">correlations</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">MKSHomogenizationModel</span><span class="p">(</span><span class="n">dimension_reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">property_linker</span><span class="o">=</span><span class="n">linker</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">compute_correlations</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">99</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_</span> <span class="o">=</span> <span class="n">prim_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_stats</span> <span class="o">=</span> <span class="n">correlate</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">correlations</span><span class="o">=</span><span class="n">correlations</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_stats</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_reshaped</span> <span class="o">=</span> <span class="n">X_stats</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">X_stats</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_pca</span> <span class="o">=</span> <span class="n">reducer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_reshaped</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X_reshaped</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="bp">None</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">reduced_fit_data</span><span class="p">,</span> <span class="n">X_pca</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -307,7 +352,19 @@ used to assign a confidence value for each data point.</li>
 <span class="gp">... </span>                               <span class="n">property_linker</span><span class="o">=</span><span class="n">linker</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">),</span> <span class="mf">0.53042314</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Predict with microstructures</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Predict with spatial correlations</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.stats</span> <span class="kn">import</span> <span class="n">correlate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">compute_correlations</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_</span> <span class="o">=</span> <span class="n">prim_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_corr</span> <span class="o">=</span> <span class="n">correlate</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">correlations</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_pred_stats</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_corr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">y_pred_stats</span> <span class="o">==</span> <span class="n">y_pred</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -340,101 +397,6 @@ property_linker.</p>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pymks.mks_homogenization_model.MKSHomogenizationModel.stats_fit">
-<tt class="descname">stats_fit</tt><big>(</big><em>X_stats</em>, <em>y</em>, <em>reduce_labels=None</em><big>)</big><a class="headerlink" href="#pymks.mks_homogenization_model.MKSHomogenizationModel.stats_fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fit model using spatial correlations</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>X_stats</strong> (<em>ND array</em>) &#8211; spatial correlations with dimensions (n_states,
-n_x, ..., n_correlations) where <cite>n_samples</cite> is the number of
-samples, <cite>n_x</cite> is the spatial discretization and
-<a href="#id1"><span class="problematic" id="id2">`</span></a>n_correlations is the spatial correlations (2-point
-statistics).</li>
-<li><strong>y</strong> (<em>1D array</em>) &#8211; The material property associated with <cite>X_stats</cite>.</li>
-<li><strong>reducer_labels</strong> (<em>1D array, optional</em>) &#8211; label for X used during the
-fit_transform method for the <cite>dimension_reducer</cite>.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>Example</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.bases</span> <span class="kn">import</span> <span class="n">PrimitiveBasis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.stats</span> <span class="kn">import</span> <span class="n">correlate</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">reducer</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">linker</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prim_basis</span> <span class="o">=</span> <span class="n">PrimitiveBasis</span><span class="p">(</span><span class="n">n_states</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">correlations</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">MKSHomogenizationModel</span><span class="p">(</span><span class="n">dimension_reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
-<span class="gp">... </span>                               <span class="n">property_linker</span><span class="o">=</span><span class="n">linker</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">99</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_</span> <span class="o">=</span> <span class="n">prim_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_stats</span> <span class="o">=</span> <span class="n">correlate</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">correlations</span><span class="o">=</span><span class="n">correlations</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">stats_fit</span><span class="p">(</span><span class="n">X_stats</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_reshaped</span> <span class="o">=</span> <span class="n">X_stats</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">X_stats</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_stats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_pca</span> <span class="o">=</span> <span class="n">reducer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_reshaped</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X_reshaped</span><span class="p">,</span>
-<span class="gp">... </span>                              <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="bp">None</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">fit_data</span><span class="p">,</span> <span class="n">X_pca</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="pymks.mks_homogenization_model.MKSHomogenizationModel.stats_predict">
-<tt class="descname">stats_predict</tt><big>(</big><em>X_stats</em><big>)</big><a class="headerlink" href="#pymks.mks_homogenization_model.MKSHomogenizationModel.stats_predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Predicts macroscopic property for 2-point statistics <cite>X_stats</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X_stats</strong> (<em>ND array</em>) &#8211; spatial correlations with dimensions (n_states,
-n_x, ..., n_correlations) where <cite>n_samples</cite> is the number of
-samples, <cite>n_x</cite> is the spatial discretization and
-<a href="#id3"><span class="problematic" id="id4">`</span></a>n_correlations is the spatial correlations (2-point
-statistics).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The predicted macroscopic property for <cite>X_stats</cite>.</td>
-</tr>
-</tbody>
-</table>
-<p>Example</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">LocallyLinearEmbedding</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">BayesianRidge</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.bases</span> <span class="kn">import</span> <span class="n">PrimitiveBasis</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymks.stats</span> <span class="kn">import</span> <span class="n">correlate</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">99</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">reducer</span> <span class="o">=</span> <span class="n">LocallyLinearEmbedding</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">linker</span> <span class="o">=</span> <span class="n">BayesianRidge</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prim_basis</span> <span class="o">=</span> <span class="n">PrimitiveBasis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">MKSHomogenizationModel</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="n">prim_basis</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="gp">... </span>                               <span class="n">dimension_reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
-<span class="gp">... </span>                               <span class="n">property_linker</span><span class="o">=</span><span class="n">linker</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_</span> <span class="o">=</span> <span class="n">prim_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Predict with <cite>stats_predict</cite></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">correlations</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_test_</span> <span class="o">=</span> <span class="n">prim_basis</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X_test_stats</span> <span class="o">=</span> <span class="n">correlate</span><span class="p">(</span><span class="n">X_test_</span><span class="p">,</span> <span class="n">correlations</span><span class="o">=</span><span class="n">correlations</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">stats_predict</span><span class="p">(</span><span class="n">X_test_stats</span><span class="p">),</span> <span class="mf">0.53042314</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </dd></dl>

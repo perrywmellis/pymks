@@ -395,8 +395,9 @@ fit the model using ``draw_components`` from ``pymks.tools``.
 
     from pymks.tools import draw_components
     
-    draw_components(model.fit_data[:, :2], model.predict_data[:, :2],
-                    label1='Training Data', label2='Testing Data')
+    draw_components([model.reduced_fit_data[:, :2], 
+                     model.reduced_predict_data[:, :2]],
+                    ['Training Data', 'Testing Data'])
 
 
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_42_0.png
