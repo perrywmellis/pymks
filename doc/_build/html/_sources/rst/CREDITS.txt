@@ -1,9 +1,0 @@
-Authors
--------
-
--  `David Brough <http://davidbrough.net/>`__
--  `Daniel Wheeler <http://wd15.github.io/about.html>`__
--  `Surya Kalidindi <http://www.me.gatech.edu/faculty/kalidindi>`__
--  `Tony Fast <http://tonyfast.com/>`__
--  Andrew Reid
-
