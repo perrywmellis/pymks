@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -200,6 +200,9 @@ al.</a>), but as the
 number of local states increases, the difference in accuracy decreases.
 Some work needs to be done in order to find the practical number of
 local states that we will use.</p>
+</div>
+<div class="section" id="optimizing-the-number-of-local-states">
+<h2>Optimizing the Number of Local States<a class="headerlink" href="#optimizing-the-number-of-local-states" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s split the calibrate dataset into testing and training datasets.
 The function <tt class="docutils literal"><span class="pre">train_test_split</span></tt> for the machine learning python module
 <tt class="docutils literal"><span class="pre">`sklearn</span></tt> &lt;<a class="reference external" href="http://scikit-learn.org/stable/">http://scikit-learn.org/stable/</a>&gt;`__ provides a convenient
@@ -243,7 +246,7 @@ overfit the data.</p>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre>GridSearchCV(cv=5,
-       estimator=MKSLocalizationModel(basis=&lt;pymks.bases.primitive.PrimitiveBasis object at 0x7efc84c1e2d0&gt;,
+       estimator=MKSLocalizationModel(basis=&lt;pymks.bases.primitive.PrimitiveBasis object at 0x7fcaf83d0f50&gt;,
            n_states=2),
        fit_params={&#39;size&#39;: (41, 41)}, iid=True, loss_func=None, n_jobs=1,
        param_grid={&#39;n_states&#39;: array([ 2,  3,  4,  5,  6,  7,  8,  9, 10])},
@@ -255,7 +258,7 @@ overfit the data.</p>
 <span class="k">print</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>MKSLocalizationModel(basis=&lt;pymks.bases.primitive.PrimitiveBasis object at 0x7efc57d58a90&gt;,
+<div class="highlight-python"><div class="highlight"><pre>MKSLocalizationModel(basis=&lt;pymks.bases.primitive.PrimitiveBasis object at 0x7fcacee46e50&gt;,
            n_states=10)
 0.99999908222
 </pre></div>

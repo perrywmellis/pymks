@@ -109,6 +109,7 @@ generate the data
     
     import numpy as np
     import matplotlib.pyplot as plt
+
 .. code:: python
 
     n = 21
@@ -118,6 +119,7 @@ generate the data
     
     X_delta = make_delta_microstructures(n_phases=2, size=(n, n))
     draw_microstructures(X_delta)
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_4_0.png
@@ -161,12 +163,14 @@ number of phases.
     X_delta, y_delta = make_elastic_FE_strain_delta(elastic_modulus=elastic_modulus,
                                                     poissons_ratio=poissons_ratio,
                                                     size=size, macro_strain=macro_strain) 
+
 Let's take a look at one of the delta microstructures and the
 :math:`\varepsilon_{xx}` strain field.
 
 .. code:: python
 
     draw_microstructure_strain(X_delta[0], y_delta[0])
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_9_0.png
@@ -189,12 +193,14 @@ strain fields to the ``fit`` method.
     
     prim_basis = PrimitiveBasis(n_states=2, domain=[0, 1])
     model = MKSLocalizationModel(basis=prim_basis)
+
 Now, pass the delta microstructures and their strain fields into the
 ``fit`` method to calibrate the first order influence coefficients.
 
 .. code:: python
 
     model.fit(X_delta, y_delta)
+
 That's it, the influence coefficient have be calibrated. Let's take a
 look at them.
 
@@ -203,6 +209,7 @@ look at them.
     from pymks.tools import draw_coeff
     
     draw_coeff(model.coeff)
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_15_0.png
@@ -238,6 +245,7 @@ results from finite element analysis.
     draw_microstructure_strain(X[0] , strain[0])
 
 
+
 .. image:: elasticity_2D_files/elasticity_2D_18_0.png
 
 
@@ -251,6 +259,7 @@ the same microstructure to the ``predict`` method.
 .. code:: python
 
     strain_pred = model.predict(X)
+
 Finally let's compare the results from finite element simulation and the
 MKS model.
 
@@ -259,6 +268,7 @@ MKS model.
     from pymks.tools import draw_strains_compare
     
     draw_strains_compare(strain[0], strain_pred[0])
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_22_0.png
@@ -271,6 +281,7 @@ Lastly, let's look at the difference between the two strain fields.
     from pymks.tools import draw_differences
     
     draw_differences([strain[0] - strain_pred[0]], ['Finite Element - MKS'])
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_24_0.png
@@ -300,6 +311,7 @@ generate a new larger random microstructure and its strain field.
     
     draw_microstructure_strain(X[0] , strain[0])
 
+
 .. parsed-literal::
 
     (63, 63)
@@ -317,11 +329,13 @@ of the new larger microstructure into the 'resize\_coeff' method.
 .. code:: python
 
     model.resize_coeff(X[0].shape)
+
 Let's now take a look that ther resized influence coefficients.
 
 .. code:: python
 
     draw_coeff(model.coeff)
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_31_0.png
@@ -340,6 +354,7 @@ argument of the ``predict`` method to get the strain field.
     draw_strains_compare(strain[0], strain_pred[0])
 
 
+
 .. image:: elasticity_2D_files/elasticity_2D_33_0.png
 
 
@@ -348,6 +363,7 @@ Again, let's look at the difference between the two strain fields.
 .. code:: python
 
     draw_differences([strain[0] - strain_pred[0]], ['Finite Element - MKS'])
+
 
 
 .. image:: elasticity_2D_files/elasticity_2D_35_0.png

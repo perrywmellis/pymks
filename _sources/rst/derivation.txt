@@ -170,7 +170,7 @@ where again :math:`h` is the local state variable.
 Plugging these definitations into the Weak Contrast Expansion recasts
 the series in the following form.
 
-.. math:: \varepsilon '(x) =\int_V \int_H \alpha(h, r) m(h, x-r) dr + \int_V \int_V \alpha_(h, h', r, r') m(h, x-r) m(h', x-r') dr'dr + ...
+.. math:: \varepsilon '(x) =\int_V \int_H \alpha(h, r) m(h, x-r) dr dh + \int_V \int_V \int_H \int_H\alpha_(h, h', r, r') m(h, x-r) m(h', x-r') dr'dr dh dh'+ ...
 
 The discrete version of this equation is the MKS localization.
 

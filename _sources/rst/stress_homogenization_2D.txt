@@ -53,6 +53,7 @@ strain of :math:`\bar{\varepsilon}_{xx}`.
     
     import numpy as np
     import matplotlib.pyplot as plt
+
 Data Generation
 ---------------
 
@@ -97,6 +98,7 @@ of ``(n_samples,)``.
     print(X.shape)
     print(y.shape)
 
+
 .. parsed-literal::
 
     (1200, 21, 21)
@@ -114,12 +116,14 @@ what they look like. We can do this by importing
     draw_microstructures((X_examples[:3]))
 
 
+
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_8_0.png
 
 
 .. code:: python
 
     draw_microstructures((X_examples[3:]))
+
 
 
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_9_0.png
@@ -135,6 +139,7 @@ above.
 .. code:: python
 
     print('Stress Values'), (y[::200])
+
 
 .. parsed-literal::
 
@@ -185,6 +190,7 @@ Let's make an instance of the MKSHomgenizationModel.
     prim_basis = PrimitiveBasis(n_states=2, domain=[0, 1])
     model = MKSHomogenizationModel(basis=prim_basis, 
                                    correlations=[(0, 0), (1, 1), (0, 1)])
+
 Let's take a look at the default values for the number of components and
 the order of the polynomial.
 
@@ -192,6 +198,7 @@ the order of the polynomial.
 
     print('Default Number of Components'), (model.n_components)
     print('Default Polynomail Order'), (model.degree)
+
 
 .. parsed-literal::
 
@@ -222,6 +229,7 @@ model. Because our microstructures are periodic, we need to use the
 
     model.n_components = 40
     model.fit(X, y, periodic_axes=[0, 1])
+
 Now look at how the cumlative variance changes as a function of the
 number of components using ``draw_component_variance`` from
 ``pymks.tools``.
@@ -231,6 +239,7 @@ number of components using ``draw_component_variance`` from
     from pymks.tools import draw_component_variance
     
     draw_component_variance(model.dimension_reducer.explained_variance_ratio_)
+
 
 
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_22_0.png
@@ -256,6 +265,7 @@ function from sklearn.
                                                         test_size=0.2, random_state=3)
     print(X_train.shape)
     print(X_test.shape)
+
 
 .. parsed-literal::
 
@@ -287,6 +297,7 @@ Let's vary ``n_components`` from 1 to 7 and ``degree`` from 1 to 3.
     params_to_tune = {'degree': np.arange(1, 4), 'n_components': np.arange(1, 8)}
     fit_params = {'size': X[0].shape, 'periodic_axes': [0, 1]}
     gs = GridSearchCV(model, params_to_tune, cv=12, n_jobs=6, fit_params=fit_params).fit(X_train, y_train)
+
 The default ``score`` method for the MKSHomogenizationModel is the
 `R-squared <http://en.wikipedia.org/wiki/Coefficient_of_determination>`__
 value. Let's look at the how the mean R-squared values and their
@@ -299,6 +310,7 @@ and ``degree`` using ``draw_gridscores_matrix`` from ``pymks.tools``.
     
     draw_gridscores_matrix(gs, ['n_components', 'degree'], score_label='R-Squared',
                            param_labels=['Number of Components', 'Order of Polynomial'])
+
 
 
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_28_0.png
@@ -319,11 +331,12 @@ data ``X_test`` to see which model performs the best.
     print('Number of Components'), (gs.best_estimator_.n_components)
     print('R-squared Value'), (gs.score(X_test, y_test))
 
+
 .. parsed-literal::
 
     Order of Polynomial 3
     Number of Components 3
-    R-squared Value 0.982073916104
+    R-squared Value 0.982073916103
 
 
 For the parameter range that we searched, we have found that a model
@@ -349,6 +362,7 @@ closer look at those values using ``draw_grid_scores``.
                     param_label='Number of Components', score_label='R-Squared')
 
 
+
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_32_0.png
 
 
@@ -360,6 +374,7 @@ grid scores.
 .. code:: python
 
     model = gs.best_estimator_
+
 Prediction using MKSHomogenizationModel
 ---------------------------------------
 
@@ -370,6 +385,7 @@ periodic, we need to use the ``periodic_axes`` argument.
 .. code:: python
 
     model.fit(X, y, periodic_axes=[0, 1])
+
 Let's generate some more data that can be used to try and validate our
 model's prediction accuracy. We are going to generate 20 samples of all
 six different types of microstructures using the same
@@ -382,11 +398,13 @@ six different types of microstructures using the same
     X_new, y_new = make_elastic_stress_random(n_samples=n_samples, size=size, grain_size=grain_size, 
                                               elastic_modulus=elastic_modulus, poissons_ratio=poissons_ratio, 
                                               macro_strain=macro_strain, seed=1)
+
 Now let's predict the stress values for the new microstructures.
 
 .. code:: python
 
     y_predict = model.predict(X_new, periodic_axes=[0, 1])
+
 We can look to see if the low-dimensional representation of the new data
 is similar to the low-dimensional representation of the data we used to
 fit the model using ``draw_components`` from ``pymks.tools``.
@@ -398,6 +416,7 @@ fit the model using ``draw_components`` from ``pymks.tools``.
     draw_components([model.reduced_fit_data[:, :2], 
                      model.reduced_predict_data[:, :2]],
                     ['Training Data', 'Testing Data'])
+
 
 
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_42_0.png
@@ -412,6 +431,7 @@ data.
     from sklearn.metrics import r2_score
     print('R-squared'), (model.score(X_new, y_new, periodic_axes=[0, 1]))
 
+
 .. parsed-literal::
 
     R-squared 0.99834842402
@@ -424,6 +444,7 @@ for each of the 6 microstructure types to see how they compare.
 
     print('Actual Stress   '), (y_new[::20])
     print('Predicted Stress'), (y_predict[::20])
+
 
 .. parsed-literal::
 
@@ -442,6 +463,7 @@ goodness-of-fit plot. We can do this by importing
     fit_data = np.array([y, model.predict(X, periodic_axes=[0, 1])])
     pred_data = np.array([y_new, y_predict])
     draw_goodness_of_fit(fit_data, pred_data, ['Training Data', 'Testing Data'])
+
 
 
 .. image:: stress_homogenization_2D_files/stress_homogenization_2D_48_0.png

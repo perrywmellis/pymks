@@ -103,6 +103,7 @@ of computing the 2-point statistics for a checkerboard microstructure.
     
     import numpy as np
     import matplotlib.pyplot as plt
+
 2-Point Statistics for Checkerboard Microstructure
 --------------------------------------------------
 
@@ -119,6 +120,7 @@ We can create a checkerboard microstructure using
     from pymks.datasets import make_checkerboard_microstructure
     
     X = make_checkerboard_microstructure(square_size=21, n_squares=8)
+
 Now let's take a look at how the microstructure looks.
 
 .. code:: python
@@ -128,6 +130,7 @@ Now let's take a look at how the microstructure looks.
     draw_microstructures(X)
     
     print X.shape
+
 
 
 .. image:: checker_board_files/checker_board_6_0.png
@@ -162,6 +165,7 @@ will using the ``PrimitiveBasis`` with ``n_states`` equal to 2.
     prim_basis = PrimitiveBasis(n_states=2)
     X_ = prim_basis.discretize(X)
     X_auto = autocorrelate(X_, periodic_axes=(0, 1))
+
 We have now computed the autocorrelations.
 
 Let's take a look at them using ``draw_autocorrelations`` from
@@ -173,6 +177,7 @@ Let's take a look at them using ``draw_autocorrelations`` from
     
     correlations = [('black', 'black'), ('white', 'white')]
     draw_autocorrelations(X_auto[0], autocorrelations=correlations)
+
 
 
 .. image:: checker_board_files/checker_board_10_0.png
@@ -196,6 +201,7 @@ Let's double check that both the phases have a volume fraction of 0.5.
     print 'Volume fraction of black phase', X_auto[0, center, center, 0]
     print 'Volume fraction of white phase', X_auto[0, center, center, 1]
 
+
 .. parsed-literal::
 
     Volume fraction of black phase 0.500000006869
@@ -210,6 +216,7 @@ using the ``crosscorrelate`` function from ``pymks.stats``
     from pymks.stats import crosscorrelate
     
     X_cross = crosscorrelate(X_, periodic_axes=(0, 1))
+
 Let's take a look at the cross correlation using
 ``draw_crosscorrelations`` from ``pymks.tools``.
 
@@ -219,6 +226,7 @@ Let's take a look at the cross correlation using
     
     correlations = [('black', 'white')]
     draw_crosscorrelations(X_cross[0], crosscorrelations=correlations)
+
 
 
 .. image:: checker_board_files/checker_board_16_0.png
@@ -235,6 +243,7 @@ Let check that it is zero.
 .. code:: python
 
     print 'Center value', X_cross[0, center, center, 0]
+
 
 .. parsed-literal::
 
@@ -257,6 +266,7 @@ computed the non-periodic statistics by omitting the keyword argument
     from pymks.stats import correlate
     
     X_corr = correlate(X_)
+
 All or some of the correlations can be viewed using the
 ``draw_correlations`` function from ``pymks.tools``. In this example we
 will look at all of them.
@@ -267,6 +277,7 @@ will look at all of them.
     
     correlations = [('black', 'black'), ('white', 'white'), ('black', 'white')]
     draw_correlations(X_corr[0].real, correlations=correlations)
+
 
 
 .. image:: checker_board_files/checker_board_22_0.png
@@ -280,6 +291,7 @@ equal to the volume fractions.
 
     print 'Volume fraction of black phase', X_corr[0, center, center, 0]
     print 'Volume fraction of white phase', X_corr[0, center, center, 1]
+
 
 .. parsed-literal::
 

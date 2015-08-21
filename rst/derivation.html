@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -56,7 +56,7 @@
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -241,7 +241,7 @@ equal to <span class="math">\(C'(r)\)</span>.</p>
 <p>Plugging these definitations into the Weak Contrast Expansion recasts
 the series in the following form.</p>
 <div class="math">
-\[\varepsilon '(x) =\int_V \int_H \alpha(h, r) m(h, x-r) dr + \int_V \int_V \alpha_(h, h', r, r') m(h, x-r) m(h', x-r') dr'dr + ...\]</div>
+\[\varepsilon '(x) =\int_V \int_H \alpha(h, r) m(h, x-r) dr dh + \int_V \int_V \int_H \int_H\alpha_(h, h', r, r') m(h, x-r) m(h', x-r') dr'dr dh dh'+ ...\]</div>
 <p>The discrete version of this equation is the MKS localization.</p>
 <div class="math">
 \[\varepsilon'[s] = \sum_{l=0}^{L-1} \sum_{r=0}^{S-1} \alpha[l, r] m[l, s-r] +\sum_{l=0}^{L-1} \sum_{l'=0}^{L-1} \sum_{r=0}^{S-1} \sum_{r'=0}^{S-1} \alpha[l, l', r, r'] m[l, s-r] m_[l', s-r'] + ...\]</div>

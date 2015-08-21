@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -190,6 +190,9 @@ microstructure function. As mentioned above, the microstructures
 of local states in local state space <tt class="docutils literal"><span class="pre">n_states</span></tt> as a free hyper
 parameter. In the next section we look to see what a practical number of
 local states for bases would be.</p>
+</div>
+<div class="section" id="optimizing-the-number-of-local-states">
+<h2>Optimizing the Number of Local States<a class="headerlink" href="#optimizing-the-number-of-local-states" title="Permalink to this headline">¶</a></h2>
 <p>Below, we compare the difference in performance as we vary the local
 state when we choose the primitive basis and the Legendre polynomial
 basis.</p>
@@ -230,7 +233,7 @@ states. More terms don&#8217;t improve the R-squared value.</p>
 <span class="k">print</span><span class="p">(</span><span class="n">gs</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>MKSLocalizationModel(basis=&lt;pymks.bases.legendre.LegendreBasis object at 0x7fa6f49e4210&gt;,
+<div class="highlight-python"><div class="highlight"><pre>MKSLocalizationModel(basis=&lt;pymks.bases.legendre.LegendreBasis object at 0x7f3882a030d0&gt;,
            n_states=4)
 1.0
 </pre></div>
@@ -239,10 +242,10 @@ states. More terms don&#8217;t improve the R-squared value.</p>
 
 <span class="n">lgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span> \
        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s">&#39;basis&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">leg_basis</span><span class="p">)]</span>
-<span class="n">cgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span> \
+<span class="n">pgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">grid_scores_</span> \
        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s">&#39;basis&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">prim_basis</span><span class="p">)]</span>
 
-<span class="n">draw_gridscores</span><span class="p">([</span><span class="n">lgs</span><span class="p">,</span> <span class="n">cgs</span><span class="p">],</span> <span class="s">&#39;n_states&#39;</span><span class="p">,</span> <span class="n">data_labels</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Legendre&#39;</span><span class="p">,</span> <span class="s">&#39;Primitve&#39;</span><span class="p">],</span>
+<span class="n">draw_gridscores</span><span class="p">([</span><span class="n">lgs</span><span class="p">,</span> <span class="n">pgs</span><span class="p">],</span> <span class="s">&#39;n_states&#39;</span><span class="p">,</span> <span class="n">data_labels</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Legendre&#39;</span><span class="p">,</span> <span class="s">&#39;Primitve&#39;</span><span class="p">],</span>
                 <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;#f46d43&#39;</span><span class="p">,</span> <span class="s">&#39;#1a9641&#39;</span><span class="p">],</span> <span class="n">score_label</span><span class="o">=</span><span class="s">&#39;R-Squared&#39;</span><span class="p">,</span>
                 <span class="n">param_label</span> <span class="o">=</span> <span class="s">&#39;L - Total Number of Local States&#39;</span><span class="p">)</span>
 </pre></div>
@@ -335,8 +338,8 @@ and the simulation.</p>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_Legendre_30_0.png" src="../_images/cahn_hilliard_Legendre_30_0.png" />
-<div class="highlight-python"><div class="highlight"><pre>Primative mse = 5.28702717916e-23
-Legendre mse = 4.35706317904e-28
+<div class="highlight-python"><div class="highlight"><pre>Primative mse = 5.28713434606e-23
+Legendre mse = 2.19721356506e-28
 </pre></div>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">LegendreBasis</span></tt> basis clearly out performs the <tt class="docutils literal"><span class="pre">PrimitiveBasis</span></tt>
@@ -396,8 +399,8 @@ look at the difference between the simulation and the MKS models.</p>
 </pre></div>
 </div>
 <img alt="../_images/cahn_hilliard_Legendre_44_0.png" src="../_images/cahn_hilliard_Legendre_44_0.png" />
-<div class="highlight-python"><div class="highlight"><pre>Primative mse = 4.43202082745e-23
-Legendre mse = 4.45272856882e-28
+<div class="highlight-python"><div class="highlight"><pre>Primative mse = 4.43233838563e-23
+Legendre mse = 2.53128987275e-28
 </pre></div>
 </div>
 <p>With the resized influence coefficients, the <tt class="docutils literal"><span class="pre">LegendreBasis</span></tt>

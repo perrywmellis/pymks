@@ -34,6 +34,7 @@ details.
     
     import numpy as np
     import matplotlib.pyplot as plt
+
 Modeling with MKS
 -----------------
 
@@ -96,6 +97,7 @@ plots one of these microstructures along with its update.
     draw_concentrations((X[0], y[0]), labels=('Input Concentration', 'Output Concentration'))
 
 
+
 .. image:: cahn_hilliard_files/cahn_hilliard_6_0.png
 
 
@@ -113,7 +115,7 @@ Some work needs to be done in order to find the practical number of
 local states that we will use.
 
 Optimizing the Number of Local States
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let's split the calibrate dataset into testing and training datasets.
 The function ``train_test_split`` for the machine learning python module
@@ -131,6 +133,7 @@ split can be set using ``random_state``.
     split_shape = (X.shape[0],) + (np.product(X.shape[1:]),)
     X_train, X_test, y_train, y_test = train_test_split(X.reshape(split_shape), y.reshape(split_shape),
                                                         test_size=0.5, random_state=3)
+
 We are now going to calibrate the influence coefficients while varying
 the number of local states from 2 up to 20. Each of these models will
 then predict the evolution of the concentration fields. Mean square
@@ -145,6 +148,7 @@ First we need to import the class ``MKSLocalizationModel`` from
 
     from pymks import MKSLocalizationModel
     from pymks.bases import PrimitiveBasis
+
 Next we will calibrate the influence coefficients while varying the
 number of local states and compute the mean squared error. The following
 demonstrates how to use Scikit-learn's ``GridSearchCV`` to optimize
@@ -164,10 +168,11 @@ overfit the data.
 
 
 
+
 .. parsed-literal::
 
     GridSearchCV(cv=5,
-           estimator=MKSLocalizationModel(basis=<pymks.bases.primitive.PrimitiveBasis object at 0x7efc84c1e2d0>,
+           estimator=MKSLocalizationModel(basis=<pymks.bases.primitive.PrimitiveBasis object at 0x7fcaf83d0f50>,
                n_states=2),
            fit_params={'size': (41, 41)}, iid=True, loss_func=None, n_jobs=1,
            param_grid={'n_states': array([ 2,  3,  4,  5,  6,  7,  8,  9, 10])},
@@ -183,7 +188,7 @@ overfit the data.
 
 .. parsed-literal::
 
-    MKSLocalizationModel(basis=<pymks.bases.primitive.PrimitiveBasis object at 0x7efc57d58a90>,
+    MKSLocalizationModel(basis=<pymks.bases.primitive.PrimitiveBasis object at 0x7fcacee46e50>,
                n_states=10)
     0.99999908222
 
@@ -194,6 +199,7 @@ overfit the data.
     
     draw_gridscores(gs.grid_scores_, 'n_states',
                     score_label='R-squared', param_label='L-Number of Local States')
+
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_14_0.png
@@ -211,6 +217,7 @@ slightly more accuracy the value can be increased.
 
     model = MKSLocalizationModel(basis=PrimitiveBasis(6, [-1, 1]))
     model.fit(X, y)
+
 Here are the first 4 influence coefficients.
 
 .. code:: python
@@ -218,6 +225,7 @@ Here are the first 4 influence coefficients.
     from pymks.tools import draw_coeff
     
     draw_coeff(model.coeff[...,:4])
+
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_18_0.png
@@ -242,7 +250,6 @@ Cahn-Hilliard simulation we need an instance of the class
     ch_sim = CahnHilliardSimulation(dt=dt)
     phi_sim = phi0.copy()
     phi_pred = phi0.copy()
-    
 
 In order to move forward in time, we need to feed the concentration back
 into the Cahn-Hilliard simulation and the MKS model.
@@ -255,6 +262,7 @@ into the Cahn-Hilliard simulation and the MKS model.
         ch_sim.run(phi_sim)
         phi_sim = ch_sim.response
         phi_pred = model.predict(phi_pred)
+
 Let's take a look at the concentration fields.
 
 .. code:: python
@@ -262,6 +270,7 @@ Let's take a look at the concentration fields.
     from pymks.tools import draw_concentrations_compare
     
     draw_concentrations((phi_sim[0], phi_pred[0]), labels=('Simulation', 'MKS'))
+
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_24_0.png
@@ -284,6 +293,7 @@ coefficients and provide a larger initial concentratio field.
     phi0 = np.random.normal(0, 1e-9, (1, m, m))
     phi_sim = phi0.copy()
     phi_pred = phi0.copy()
+
 Once again we are going to march forward in time by feeding the
 concentration fields back into the Cahn-Hilliard simulation and the MKS
 model.
@@ -294,6 +304,7 @@ model.
         ch_sim.run(phi_sim)
         phi_sim = ch_sim.response
         phi_pred = model.predict(phi_pred)
+
 Let's take a look at the results.
 
 .. code:: python
@@ -301,6 +312,7 @@ Let's take a look at the results.
     from pymks.tools import draw_concentrations_compare
     
     draw_concentrations_compare((phi_sim[0], phi_pred[0]), labels=('Simulation', 'MKS'))
+
 
 
 .. image:: cahn_hilliard_files/cahn_hilliard_30_0.png

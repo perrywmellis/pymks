@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.1',
+        VERSION:     '0.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="index.html"><img src="_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -230,8 +230,8 @@ of microstructures and regression methods to predict effective
 properties. Take a look at the low dimensional representations.</p>
 <div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymks.tools</span> <span class="kn">import</span> <span class="n">draw_components</span>
 
-<span class="n">draw_components</span><span class="p">(</span><span class="n">homogenize_model</span><span class="o">.</span><span class="n">fit_data</span><span class="p">,</span> <span class="n">homogenize_model</span><span class="o">.</span><span class="n">predict_data</span><span class="p">,</span>
-                <span class="n">label_1</span><span class="o">=</span><span class="s">&#39;Training Data&#39;</span><span class="p">,</span> <span class="n">label_2</span><span class="o">=</span><span class="s">&#39;Testing Data&#39;</span><span class="p">)</span>
+<span class="n">draw_components</span><span class="p">([</span><span class="n">homogenize_model</span><span class="o">.</span><span class="n">reduced_fit_data</span><span class="p">,</span> <span class="n">homogenize_model</span><span class="o">.</span><span class="n">reduced_predict_data</span><span class="p">],</span>
+                <span class="p">[</span><span class="s">&#39;Training Data&#39;</span><span class="p">,</span> <span class="s">&#39;Testing Data&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <img alt="_images/intro_26_0.png" src="_images/intro_26_0.png" />

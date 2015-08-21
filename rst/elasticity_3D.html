@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.2.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -53,7 +53,7 @@
         </button>
         <a class="navbar-brand" href="../index.html"><img src="../_static/pymks_logo.png">
           PyMKS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -215,7 +215,7 @@ the <tt class="docutils literal"><span class="pre">make_elasticFEstrain_delta</s
 <span class="k">print</span> <span class="s">&#39;Elapsed Time&#39;</span><span class="p">,</span><span class="n">tm</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">,</span> <span class="s">&#39;Seconds&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 173.42673707 Seconds
+<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 137.266396999 Seconds
 </pre></div>
 </div>
 <p>Let&#8217;s take a look at one of the delta microstructures and the
@@ -281,7 +281,7 @@ results from finite element analysis.</p>
 <span class="n">draw_microstructure_strain</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">]</span> <span class="p">,</span> <span class="n">strain</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 73.3518118858 Seconds
+<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 67.0600619316 Seconds
 </pre></div>
 </div>
 <img alt="../_images/elasticity_3D_18_1.png" src="../_images/elasticity_3D_18_1.png" />
@@ -295,7 +295,7 @@ the same microstructure to the <tt class="docutils literal"><span class="pre">pr
 <span class="k">print</span> <span class="s">&#39;Elapsed Time&#39;</span><span class="p">,</span><span class="n">tm</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">,</span><span class="s">&#39;Seconds&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 0.00445413589478 Seconds
+<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 0.0036780834198 Seconds
 </pre></div>
 </div>
 <p>Finally let&#8217;s compare the results from finite element simulation and the
@@ -351,7 +351,7 @@ argument of the <tt class="docutils literal"><span class="pre">predict</span></t
 <span class="n">draw_microstructure_strain</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">],</span> <span class="n">strain_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">center</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 0.0269329547882 Seconds
+<div class="highlight-python"><div class="highlight"><pre>Elapsed Time 0.0222690105438 Seconds
 </pre></div>
 </div>
 <img alt="../_images/elasticity_3D_31_1.png" src="../_images/elasticity_3D_31_1.png" />

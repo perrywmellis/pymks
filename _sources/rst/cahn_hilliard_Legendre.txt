@@ -44,6 +44,7 @@ section <THEORY.html>`__.
     
     import numpy as np
     import matplotlib.pyplot as plt
+
 Modeling with MKS
 -----------------
 
@@ -74,6 +75,7 @@ domain given by ``size``.
     np.random.seed(101)
     size=(length, length)
     X, y = make_cahn_hilliard(n_samples=n_samples, size=size, dt=dt)
+
 The function ``make_cahnHilliard`` has generated ``n_samples`` number of
 random microstructures, ``X``, and returned the same microstructures
 after they have evolved for one time step given by ``y``. Let's take a
@@ -84,6 +86,7 @@ look at one of them.
     from pymks.tools import draw_concentrations
     
     draw_concentrations((X[0], y[0]),('Calibration Input', 'Calibration Output'))
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_7_0.png
@@ -101,7 +104,7 @@ parameter. In the next section we look to see what a practical number of
 local states for bases would be.
 
 Optimizing the Number of Local States
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Below, we compare the difference in performance as we vary the local
 state when we choose the primitive basis and the Legendre polynomial
@@ -139,6 +142,7 @@ optimal parameters with a grid search.
     scoring = metrics.make_scorer(lambda a, b: -mse(a, b))
     fit_params = {'size': size}
     gs = GridSearchCV(Model, params_to_tune, cv=5, fit_params=fit_params, n_jobs=3).fit(X_train, y_train)
+
 The optimal parameters are the ``LegendreBasis`` with only 4 local
 states. More terms don't improve the R-squared value.
 
@@ -147,9 +151,10 @@ states. More terms don't improve the R-squared value.
     print(gs.best_estimator_)
     print(gs.score(X_test, y_test))
 
+
 .. parsed-literal::
 
-    MKSLocalizationModel(basis=<pymks.bases.legendre.LegendreBasis object at 0x7fa6f49e4210>,
+    MKSLocalizationModel(basis=<pymks.bases.legendre.LegendreBasis object at 0x7f3882a030d0>,
                n_states=4)
     1.0
 
@@ -160,12 +165,13 @@ states. More terms don't improve the R-squared value.
     
     lgs = [x for x in gs.grid_scores_ \
            if type(x.parameters['basis']) is type(leg_basis)]
-    cgs = [x for x in gs.grid_scores_ \
+    pgs = [x for x in gs.grid_scores_ \
            if type(x.parameters['basis']) is type(prim_basis)]
     
-    draw_gridscores([lgs, cgs], 'n_states', data_labels=['Legendre', 'Primitve'],
+    draw_gridscores([lgs, pgs], 'n_states', data_labels=['Legendre', 'Primitve'],
                     colors=['#f46d43', '#1a9641'], score_label='R-Squared', 
                     param_label = 'L - Total Number of Local States')
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_12_0.png
@@ -187,6 +193,7 @@ Comparing the Bases for ``n_states=4``
     leg_basis = LegendreBasis(4, [-1, 1])
     leg_model = MKSLocalizationModel(basis=leg_basis)
     leg_model.fit(X, y)
+
 Now let's look at the influence coefficients for both bases.
 
 First the ``PrimitiveBasis`` influence coefficients
@@ -198,6 +205,7 @@ First the ``PrimitiveBasis`` influence coefficients
     draw_coeff(prim_model.coeff)
 
 
+
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_17_0.png
 
 
@@ -206,6 +214,7 @@ Now for the ``LegendreBasis`` influence coefficients.
 .. code:: python
 
     draw_coeff(leg_model.coeff)
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_19_0.png
@@ -233,13 +242,13 @@ the Cahn-Hilliard simulation we need an instance of the class
     phi_sim = phi0.copy()
     phi_prim = phi0.copy()
     phi_legendre = phi0.copy()
-    
 
 Let's look at the inital concentration field.
 
 .. code:: python
 
     draw_concentrations([phi0[0]], ['Initial Concentration'])
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_24_0.png
@@ -257,6 +266,7 @@ into the Cahn-Hilliard simulation and the MKS models.
         phi_sim = ch_sim.response
         phi_prim = prim_model.predict(phi_prim)
         phi_legendre = leg_model.predict(phi_legendre)
+        
 Let's take a look at the concentration fields.
 
 .. code:: python
@@ -265,6 +275,7 @@ Let's take a look at the concentration fields.
     
     draw_concentrations((phi_sim[0], phi_prim[0], phi_legendre[0]),
                         ('Simulation', 'Primative', 'Legendre'))
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_28_0.png
@@ -287,13 +298,14 @@ and the simulation.
     print 'Legendre mse =', mse(phi_sim[0], phi_legendre[0])
 
 
+
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_30_0.png
 
 
 .. parsed-literal::
 
-    Primative mse = 5.28702717916e-23
-    Legendre mse = 4.35706317904e-28
+    Primative mse = 5.28713434606e-23
+    Legendre mse = 2.19721356506e-28
 
 
 The ``LegendreBasis`` basis clearly out performs the ``PrimitiveBasis``
@@ -323,6 +335,7 @@ Let's take a look at the initial large concentration field.
     draw_concentrations([phi0[0]], ['Initial Concentration'])
 
 
+
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_35_0.png
 
 
@@ -335,6 +348,7 @@ First the influence coefficients from the ``PrimitiveBasis``.
     draw_coeff(prim_model.coeff)
 
 
+
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_37_0.png
 
 
@@ -343,6 +357,7 @@ Now the influence coefficients from the ``LegendreBases``.
 .. code:: python
 
     draw_coeff(leg_model.coeff)
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_39_0.png
@@ -359,9 +374,11 @@ models.
         phi_sim = ch_sim.response
         phi_prim = prim_model.predict(phi_prim)
         phi_legendre = leg_model.predict(phi_legendre)
+        
 .. code:: python
 
     draw_concentrations((phi_sim[0], phi_prim[0], phi_legendre[0]), ('Simulation', 'Primiative', 'Legendre'))
+
 
 
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_42_0.png
@@ -380,13 +397,14 @@ look at the difference between the simulation and the MKS models.
     print 'Legendre mse =', mse(phi_sim[0], phi_legendre[0])
 
 
+
 .. image:: cahn_hilliard_Legendre_files/cahn_hilliard_Legendre_44_0.png
 
 
 .. parsed-literal::
 
-    Primative mse = 4.43202082745e-23
-    Legendre mse = 4.45272856882e-28
+    Primative mse = 4.43233838563e-23
+    Legendre mse = 2.53128987275e-28
 
 
 With the resized influence coefficients, the ``LegendreBasis``
