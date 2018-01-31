@@ -9,5 +9,3 @@ Examples
    spatial_stats.rst
    homogenization.rst
    localization.rst
-
-
